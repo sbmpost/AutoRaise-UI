@@ -21,6 +21,14 @@
 import CoreServices
 import Cocoa
 import Foundation
+import AppKit
+
+class URLButton: NSButton {
+    override func resetCursorRects() {
+        super.resetCursorRects()
+        addCursorRect(bounds, cursor: .pointingHand)
+    }
+}
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -33,17 +41,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var enableWarpButton: NSButton!
     // About
     @IBOutlet weak var aboutText: NSTextField!
-    @IBOutlet weak var homePage: NSButton!
+    @IBOutlet weak var homePage: URLButton!
 
     let appVersionString: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise\n" +
-        "Version 1.2, 2021-02-07\n\n" +
+        "Version 1.5, 2021-03-13\n\n" +
         "©2021 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
     
-    let homePageUrl = "https://github.com/sbmpost/AutoRaise"
+    let homePageUrl = "https://github.com/lhaeger/AutoRaise/tree/Launcher"
 
     let prefs = UserDefaults.standard
 
