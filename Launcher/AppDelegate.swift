@@ -1,6 +1,6 @@
 /*
  *
- * AutoRaise
+ * AutoRaise Launcher
  *
  * Copyright (c) 2020 Stefan Post, Lothar Haeger
  *
@@ -39,6 +39,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var delaySliderLabel: NSTextField!
     @IBOutlet weak var delaySlider: NSSlider!
     @IBOutlet weak var enableWarpButton: NSButton!
+    @IBOutlet weak var enableOnLaunchButton: NSButton!
+    @IBOutlet weak var openAtLoginButton: NSButton!
     // About
     @IBOutlet weak var aboutText: NSTextField!
     @IBOutlet weak var homePage: URLButton!
@@ -46,8 +48,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let appVersionString: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
-    let appAbout =  "AutoRaise\n" +
-        "Version 1.5, 2021-03-13\n\n" +
+    let appAbout =  "AutoRaise & Launcher\n" +
+        "Version 1.5.0, 2021-03-13\n\n" +
         "©2021 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
     
@@ -65,6 +67,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     var autoRaiseDelay : NSInteger = 40
     var enableWarp = NSControl.StateValue.off
+    var enableOnLaunch = NSControl.StateValue.off
+    var openAtLogin = NSControl.StateValue.off
 
     let icon = NSImage(named: "MenuIcon")
     let iconRunning = NSImage(named: "MenuIconRunning")
@@ -93,6 +97,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menuItemQuit.title = "Quit"
         menuItemQuit.action = #selector(quitApplication(_:))
         menu.addItem(menuItemQuit)
+
     }
 
     @objc func menuBarItemClicked(_ sender: NSStatusBarButton) {
@@ -106,6 +111,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.startService(self)
             }
         }
+    }
+
+    @IBAction func enableOnLaunch(_ sender: NSButton) {
+        enableOnLaunch = enableOnLaunchButton.state
+        self.prefs.set(enableOnLaunch == NSControl.StateValue.on ? "1" : "0", forKey: "enableOnLaunch")
+    }
+
+    @IBAction func openAtLogin(_ sender: NSButton) {
+        openAtLogin = openAtLoginButton.state
+        self.prefs.set(openAtLogin == NSControl.StateValue.on ? "1" : "0", forKey: "openAtLogin")
     }
 
     @IBAction func autoRaiseDelay(_ sender: Any) {
@@ -132,7 +147,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             enableWarp = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
             autoRaiseDelay = prefs.integer(forKey: "autoRaiseDelay")
         }
+        if let rawValue = prefs.string(forKey: "enableOnLaunch") {
+            enableOnLaunch = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
+        }
+        if let rawValue = prefs.string(forKey: "openAtLogin") {
+            openAtLogin = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
+        }
         delaySliderLabel.stringValue = "Delay window activation for " + String(autoRaiseDelay) + " ms"
+        enableOnLaunchButton.state = enableOnLaunch
+        openAtLoginButton.state = openAtLogin
         enableWarpButton.state = enableWarp
         delaySlider.integerValue = autoRaiseDelay
     }
@@ -147,6 +170,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(CGWindowLevelKey.floatingWindow)))
 
         menuBarItem.button?.image = icon
+
+        readPreferences()
+
+        if enableOnLaunch == NSControl.StateValue.on {
+            self.startService(self)
+        }
 
         // update about tab contents
         aboutText.stringValue = appAbout
@@ -177,7 +206,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func Preferences(_ sender: AnyObject){
-        readPreferences()
         self.window.makeKeyAndOrderFront(self)
     }
     

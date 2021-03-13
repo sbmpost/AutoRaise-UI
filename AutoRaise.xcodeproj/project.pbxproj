@@ -11,7 +11,7 @@
 		C557DD431B988ED300E59BC9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C557DD421B988ED300E59BC9 /* AppDelegate.swift */; };
 		C557DD451B988ED300E59BC9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C557DD441B988ED300E59BC9 /* Images.xcassets */; };
 		C557DD481B988ED300E59BC9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C557DD461B988ED300E59BC9 /* MainMenu.xib */; };
-		C59A84F02586387800AD9D56 /* AutoRaise in Resources */ = {isa = PBXBuildFile; fileRef = C59A84EF2586387800AD9D56 /* AutoRaise */; };
+		C58DC14525FCEBBB00084C22 /* AutoRaise in Resources */ = {isa = PBXBuildFile; fileRef = C58DC14425FCEBBB00084C22 /* AutoRaise */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,7 +21,7 @@
 		C557DD441B988ED300E59BC9 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C557DD471B988ED300E59BC9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		C570C3762586877A00CC080F /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C59A84EF2586387800AD9D56 /* AutoRaise */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = AutoRaise; sourceTree = "<group>"; };
+		C58DC14425FCEBBB00084C22 /* AutoRaise */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = AutoRaise; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,8 +38,8 @@
 		C557DD341B988ED300E59BC9 = {
 			isa = PBXGroup;
 			children = (
+				C58DC14425FCEBBB00084C22 /* AutoRaise */,
 				C501B69425875F32005B3964 /* LICENSE.md */,
-				C59A84EF2586387800AD9D56 /* AutoRaise */,
 				C557DD3F1B988ED300E59BC9 /* Launcher */,
 				C557DD3E1B988ED300E59BC9 /* Products */,
 			);
@@ -136,7 +136,7 @@
 			files = (
 				C501B69525875F32005B3964 /* LICENSE.md in Resources */,
 				C557DD451B988ED300E59BC9 /* Images.xcassets in Resources */,
-				C59A84F02586387800AD9D56 /* AutoRaise in Resources */,
+				C58DC14525FCEBBB00084C22 /* AutoRaise in Resources */,
 				C557DD481B988ED300E59BC9 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

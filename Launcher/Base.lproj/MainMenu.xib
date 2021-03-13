@@ -18,8 +18,10 @@
                 <outlet property="aboutText" destination="4Je-U3-qzh" id="AWu-SI-jKW"/>
                 <outlet property="delaySlider" destination="8iB-Ot-QXU" id="3M1-Uc-xjp"/>
                 <outlet property="delaySliderLabel" destination="sv0-cx-SO9" id="AbN-yC-qlk"/>
+                <outlet property="enableOnLaunchButton" destination="uTn-Xu-dZ3" id="8nJ-IV-HrL"/>
                 <outlet property="enableWarpButton" destination="BQn-Wh-SrZ" id="Tll-pG-Jm9"/>
                 <outlet property="homePage" destination="Uxy-EO-1u0" id="okw-cw-SmL"/>
+                <outlet property="openAtLoginButton" destination="Sk7-tD-rcU" id="jh6-mq-e8c"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -701,7 +703,7 @@
                                                 <action selector="autoRaiseDelay:" target="Voe-Tx-rLC" id="Whv-Tg-BGO"/>
                                             </connections>
                                         </slider>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="sv0-cx-SO9">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="sv0-cx-SO9">
                                             <rect key="frame" x="29" y="130" width="251" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Delay window activation for 20 ms" id="oGO-D2-O9I">
@@ -711,14 +713,36 @@
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" id="BQn-Wh-SrZ">
-                                            <rect key="frame" x="29" y="55" width="410" height="18"/>
+                                            <rect key="frame" x="29" y="70" width="410" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="check" title="Warp mouse pointer to center of activated windows?" bezelStyle="regularSquare" imagePosition="left" inset="2" id="c2G-na-Rzs">
+                                            <buttonCell key="cell" type="check" title="Warp mouse pointer to center of activated windows" bezelStyle="regularSquare" imagePosition="left" inset="2" id="c2G-na-Rzs">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="enableWarp:" target="Voe-Tx-rLC" id="1iF-fn-ZQ1"/>
+                                            </connections>
+                                        </button>
+                                        <button hidden="YES" verticalHuggingPriority="750" id="Sk7-tD-rcU">
+                                            <rect key="frame" x="29" y="15" width="410" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="check" title="Open Launcher at login" bezelStyle="regularSquare" imagePosition="left" enabled="NO" inset="2" id="wzg-SQ-9Td">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="openAtLogin:" target="Voe-Tx-rLC" id="Ixa-vF-Wx5"/>
+                                            </connections>
+                                        </button>
+                                        <button verticalHuggingPriority="750" id="uTn-Xu-dZ3">
+                                            <rect key="frame" x="29" y="43" width="410" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="check" title="Enable AutoRaise on launch" bezelStyle="regularSquare" imagePosition="left" inset="2" id="OgB-hb-QVC">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="enableOnLaunch:" target="Voe-Tx-rLC" id="3tP-zl-Lag"/>
                                             </connections>
                                         </button>
                                     </subviews>
