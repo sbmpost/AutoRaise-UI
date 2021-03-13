@@ -2,7 +2,7 @@
  *
  * AutoRaise Launcher
  *
- * Copyright (c) 2020 Stefan Post, Lothar Haeger
+ * Copyright (c) 2021 Lothar Haeger
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,11 +49,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 1.5.0, 2021-03-13\n\n" +
+        "Version 1.5.1, 2021-03-13\n\n" +
         "©2021 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
     
-    let homePageUrl = "https://github.com/lhaeger/AutoRaise/tree/Launcher"
+    let homePageUrl = "https://github.com/lhaeger/AutoRaise"
 
     let prefs = UserDefaults.standard
 
