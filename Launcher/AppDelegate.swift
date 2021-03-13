@@ -34,11 +34,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // About
     @IBOutlet weak var aboutText: NSTextField!
     @IBOutlet weak var homePage: NSButton!
-    
+
+    let appVersionString: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
+    let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise\n" +
-        "Version 1.0, 2020-12-13\n\n" +
-        "©2020 Stefan Post, Lothar Haeger\n" +
+        "Version 1.2, 2021-02-07\n\n" +
+        "©2021 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
     
     let homePageUrl = "https://github.com/sbmpost/AutoRaise"
