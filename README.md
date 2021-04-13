@@ -39,3 +39,6 @@ Copy AutoRaise.app into your /Applications folder (there is no installer or pre-
 ## Running & Configuring
 
 Open AutoRaise.app and click on the menubar icon to enable/disable AutoRaise with default settings. Preferences are saved between sessions in the default ~/Library/Preferences folder.
+On first launch you should be prompted to grant access for AutoRaise in System Preferences > Security & Privacy > Privacy > Accessibility.
+
+More options to run and configure AutoRaise are explained in the upstream project's Readme.
