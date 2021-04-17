@@ -109,7 +109,6 @@
 				TargetAttributes = {
 					C557DD3C1B988ED300E59BC9 = {
 						CreatedOnToolsVersion = 6.4;
-						DevelopmentTeam = 8B7L8R4FBJ;
 						LastSwiftMigration = 1220;
 					};
 				};
@@ -306,7 +305,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 0;
@@ -332,6 +331,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = 8B7L8R4FBJ;
@@ -343,6 +343,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.brummelhook.AutoRaise;
 				PRODUCT_NAME = AutoRaise;
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "AutoRaise-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
