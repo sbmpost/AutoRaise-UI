@@ -39,6 +39,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var delaySliderLabel: NSTextField!
     @IBOutlet weak var delaySlider: NSSlider!
     @IBOutlet weak var enableWarpButton: NSButton!
+    @IBOutlet weak var enableCurserScalingButton: NSButton!
     @IBOutlet weak var enableOnLaunchButton: NSButton!
     @IBOutlet weak var openAtLoginButton: NSButton!
     // About
@@ -49,7 +50,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 1.8.0, 2021-04-17\n\n" +
+        "Version 1.8.1, 2021-04-17\n\n" +
         "©2021 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
     
@@ -67,6 +68,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     var autoRaiseDelay : NSInteger = 40
     var enableWarp = NSControl.StateValue.off
+    var enableCursorScaling = NSControl.StateValue.off
     var enableOnLaunch = NSControl.StateValue.off
     var openAtLogin = NSControl.StateValue.off
 
@@ -135,7 +137,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @IBAction func enableWarp(_ sender: NSButton) {
         enableWarp = enableWarpButton.state
+        enableCurserScalingButton.isEnabled = (enableWarp == NSControl.StateValue.on)
         self.prefs.set(enableWarp == NSControl.StateValue.on ? "1" : "0", forKey: "enableWarp")
+        if autoRaiseService.isRunning {
+            self.stopService(self)
+            self.startService(self)
+        }
+    }
+
+    @IBAction func enableCursorScaling(_ sender: NSButton) {
+        enableCursorScaling = enableCurserScalingButton.state
+        self.prefs.set(enableCursorScaling == NSControl.StateValue.on ? "1" : "0", forKey: "enableCursorScaling")
         if autoRaiseService.isRunning {
             self.stopService(self)
             self.startService(self)
@@ -147,6 +159,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             enableWarp = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
             autoRaiseDelay = prefs.integer(forKey: "autoRaiseDelay")
         }
+        if let rawValue = prefs.string(forKey: "enableCursorScaling") {
+            enableCursorScaling = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
+        }
         if let rawValue = prefs.string(forKey: "enableOnLaunch") {
             enableOnLaunch = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
@@ -157,6 +172,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         enableOnLaunchButton.state = enableOnLaunch
         openAtLoginButton.state = openAtLogin
         enableWarpButton.state = enableWarp
+        enableCurserScalingButton.state = enableCursorScaling
+        if enableWarp == NSControl.StateValue.on {
+            enableCurserScalingButton.isEnabled = true
+        } else {
+            enableCurserScalingButton.isEnabled = false
+        }
         delaySlider.integerValue = autoRaiseDelay
     }
 
@@ -218,6 +239,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 autoRaiseService.arguments = ["-delay", String(autoRaiseDelay / 20)]
                 if ( enableWarp == NSControl.StateValue.on ) {
                     autoRaiseService.arguments! += ["-warpX", "0.5", "-warpY", "0.5"]
+                    if ( enableCursorScaling == NSControl.StateValue.on ) {
+                        autoRaiseService.arguments! += ["-scale", "2.0"]
+                    } else {
+                        autoRaiseService.arguments! += ["-scale", "1.0"]
+                    }
                 }
             }
             autoRaiseService.launch()
