@@ -50,7 +50,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 1.8.1, 2021-04-17\n\n" +
+        "Version 1.8.2, 2021-04-23\n\n" +
         "©2021 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
     
@@ -79,7 +79,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Build status bar menu
         menuBarItem = statusBar.statusItem(withLength: NSStatusItem.variableLength)
-        menuBarItem.title = ""
+        menuBarItem.button?.title = ""
 
         if let button = menuBarItem.button {
             button.action = #selector(menuBarItemClicked(_:))
