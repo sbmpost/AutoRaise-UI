@@ -22,7 +22,17 @@ Here's where the **Launcher** app bundle comes into play: a menubar application 
 
 Please note that this project does not alter the upstream AutoRaise code, it merely wraps an app bundle around it for convenience.
 
-## Building
+## Installing
+
+There is no installer or pre-built binary being distributed via Github but AutoRaise & Launcher binaries can be installed via [MacPorts](https://www.macports.org):
+
+`sudo port install AutoRaise`
+
+This installs the app bundle (which includes a copy of the AutoRaise cli binary) into your Applications folder. If you want the cli also to be installed for use on the command line, please select the "cli" variant:
+
+`sudo port install AutoRaise +cli`
+
+## Building from source
 
 Simply clone, open and build this project in XCode. 
 
@@ -32,9 +42,7 @@ Like upstream XCode will first build the AutoRaise binary by running
 
 and include it when finally building the Launcher app bundle (AutoRaise.app).
 
-## Installing
-
-Copy AutoRaise.app into your /Applications folder (there is no installer or pre-built binary being distributed via Github).
+To install copy AutoRaise.app into the /Applications folder and/or the AutoRaise binary to e.g. /usr/local/bin
 
 ## Running & Configuring
 
