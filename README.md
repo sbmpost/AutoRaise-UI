@@ -5,7 +5,7 @@ This project consists of two components: AutoRaise and Launcher.
 
 The **AutoRaise** binary is written and maintained by Stefan Post at https://github.com/sbmpost/AutoRaise. From the readme:
 
-> When AutoRaise is running and you hover the mouse cursor over a window it will be raised to the front (with a delay of your choosing) and gets the focus. There is also an option to warp the mouse to the center of the activated window, using the cmd-tab key combination for example."
+> When you hover a window it will be raised to the front (with a delay of your choosing) and gets the focus. There is also an option to warp the mouse to the center of the activated window when using the cmd-tab key combination.
 > 
 > See also: https://stackoverflow.com/questions/98310/focus-follows-mouse-plus-auto-raise-on-mac-os-x
 
@@ -28,9 +28,7 @@ There is no installer or pre-built binary being distributed via Github but AutoR
 
 `sudo port install AutoRaise`
 
-This installs the app bundle (which includes a copy of the AutoRaise cli binary) into your Applications folder. If you want the cli also to be installed for use on the command line, please select the "cli" variant:
-
-`sudo port install AutoRaise +cli`
+This installs the menubar app bundle (which includes a copy of the upstream AutoRaise cli binary) into your Applications folder and symlinks the cli into the Path, usually into `/opt/local/bin`
 
 ## Building from source
 
@@ -42,7 +40,7 @@ Like upstream XCode will first build the AutoRaise binary by running
 
 and include it when finally building the Launcher app bundle (AutoRaise.app).
 
-To install copy AutoRaise.app into the /Applications folder and/or the AutoRaise binary to e.g. /usr/local/bin
+To install copy AutoRaise.app into the /Applications folder and/or the AutoRaise binary to e.g. `/usr/local/bin`
 
 ## Running & Configuring
 
