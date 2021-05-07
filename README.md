@@ -40,11 +40,11 @@ Like upstream XCode will first build the AutoRaise binary by running
 
 and include it when finally building the Launcher app bundle (AutoRaise.app).
 
-To install copy AutoRaise.app into the /Applications folder and/or the AutoRaise binary to e.g. `/usr/local/bin`
+To install copy AutoRaise.app into the `/Applications` folder and/or the AutoRaise binary to e.g. `/usr/local/bin`
 
 ## Running & Configuring
 
-Open AutoRaise.app and click on the menubar icon to enable/disable AutoRaise with default settings. Preferences are saved between sessions in the default ~/Library/Preferences folder.
-On first launch you should be prompted to grant access for AutoRaise in System Preferences > Security & Privacy > Privacy > Accessibility.
+Open AutoRaise.app and click on the menubar icon to enable/disable AutoRaise with default settings. Preferences are saved between sessions in the default `~/Library/Preferences` folder.
+On first launch you should be prompted to grant access for AutoRaise in _System Preferences > Security & Privacy > Privacy > Accessibility_.
 
 More options to run and configure AutoRaise are explained in the upstream project's Readme.
