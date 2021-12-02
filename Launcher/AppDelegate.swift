@@ -22,6 +22,7 @@ import CoreServices
 import Cocoa
 import Foundation
 import AppKit
+import MASShortcut
 
 class URLButton: NSButton {
     override func resetCursorRects() {
@@ -42,6 +43,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var enableCurserScalingButton: NSButton!
     @IBOutlet weak var enableOnLaunchButton: NSButton!
     @IBOutlet weak var openAtLoginButton: NSButton!
+    @IBOutlet weak var shortcutView: MASShortcutView!
+
     // About
     @IBOutlet weak var aboutText: NSTextField!
     @IBOutlet weak var homePage: URLButton!
@@ -75,6 +78,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let icon = NSImage(named: "MenuIcon")
     let iconRunning = NSImage(named: "MenuIconRunning")
 
+
     override func awakeFromNib() {
 
         // Build status bar menu
@@ -100,12 +104,36 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menuItemQuit.action = #selector(quitApplication(_:))
         menu.addItem(menuItemQuit)
 
+        shortcutView.associatedUserDefaultsKey = "HotKey"
+       // let shortcut = shortcutView.shortcutValue
+
+      //  MASShortcutMonitor.shared().register(shortcut, withAction: {
+      //      self.menuBarItemClicked(self.menuBarItem.button!);
+       // })
+
+        shortcutView.shortcutValueChange = { (sender) in
+
+            let callback: (() -> Void)!
+
+            if self.shortcutView.shortcutValue?.keyCodeStringForKeyEquivalent == "k" {
+                callback = {
+                    print("K shortcut handler")
+                }
+            } else {
+                callback = {
+                    print("Default handler")
+                }
+            }
+
+            MASShortcutMonitor.shared().register(self.shortcutView.shortcutValue, withAction:{  self.menuBarItemClicked(self.menuBarItem.button!);
+            })
+        }
     }
 
     @objc func menuBarItemClicked(_ sender: NSStatusBarButton) {
         let event = NSApp.currentEvent!
         if event.type == NSEvent.EventType.rightMouseUp {
-            menuBarItem.popUpMenu(menu)
+            menuBarItem.menu = menu
         } else {
             if autoRaiseService.isRunning {
                 self.stopService(self)
@@ -198,7 +226,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.startService(self)
         }
 
-        // update about tab contents
+       // update about tab contents
         aboutText.stringValue = appAbout
         // homepage link
         let pstyle = NSMutableParagraphStyle()
