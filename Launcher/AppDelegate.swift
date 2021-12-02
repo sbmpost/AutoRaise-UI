@@ -78,7 +78,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let icon = NSImage(named: "MenuIcon")
     let iconRunning = NSImage(named: "MenuIconRunning")
 
-
     override func awakeFromNib() {
 
         // Build status bar menu
@@ -103,44 +102,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menuItemQuit.title = "Quit"
         menuItemQuit.action = #selector(quitApplication(_:))
         menu.addItem(menuItemQuit)
+    }
 
-        shortcutView.associatedUserDefaultsKey = "HotKey"
-       // let shortcut = shortcutView.shortcutValue
+    func updateHotkey(){
 
-      //  MASShortcutMonitor.shared().register(shortcut, withAction: {
-      //      self.menuBarItemClicked(self.menuBarItem.button!);
-       // })
+    }
 
-        // example code to act on hotkey change
-//        shortcutView.shortcutValueChange = { (sender) in
-//
-//            let callback: (() -> Void)!
-//
-//            if self.shortcutView.shortcutValue?.keyCodeStringForKeyEquivalent == "k" {
-//                callback = {
-//                    print("K shortcut handler")
-//                }
-//            } else {
-//                callback = {
-//                    print("Default handler")
-//                }
-//            }
-//        }
-
-        MASShortcutMonitor.shared().register(self.shortcutView.shortcutValue, withAction:{  self.menuBarItemClicked(self.menuBarItem.button!);
-        })
+    func toggleService() {
+        if autoRaiseService.isRunning {
+            self.stopService(self)
+        } else {
+            self.startService(self)
+        }
     }
 
     @objc func menuBarItemClicked(_ sender: NSStatusBarButton) {
         let event = NSApp.currentEvent!
         if event.type == NSEvent.EventType.rightMouseUp {
-            menuBarItem.menu = menu
+            menuBarItem.popUpMenu(menu)
         } else {
-            if autoRaiseService.isRunning {
-                self.stopService(self)
-            } else {
-                self.startService(self)
-            }
+            toggleService()
         }
     }
 
@@ -223,6 +204,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         readPreferences()
 
+        let shortcut = shortcutView.shortcutValue
+        shortcutView.associatedUserDefaultsKey = "HotKey"
+
+        shortcutView.shortcutValueChange = { (sender) in
+                MASShortcutMonitor.shared()?.unregisterAllShortcuts()
+                if shortcut != nil {
+                    MASShortcutMonitor.shared().register(shortcut, withAction:{
+                        self.toggleService()
+                    })
+                }
+        }
+
+        if self.shortcutView.shortcutValue != nil {
+            MASShortcutMonitor.shared().register(self.shortcutView.shortcutValue, withAction: toggleService)
+        }
+
         if enableOnLaunch == NSControl.StateValue.on {
             self.startService(self)
         }
@@ -242,6 +239,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationWillTerminate(_ aNotification: Notification) {
         stopService(self)
+        MASShortcutMonitor.shared().unregisterAllShortcuts()
     }
 
     func messageBox(_ message: String, description: String?=nil) -> Bool {
