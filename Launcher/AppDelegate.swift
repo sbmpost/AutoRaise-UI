@@ -111,23 +111,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       //      self.menuBarItemClicked(self.menuBarItem.button!);
        // })
 
-        shortcutView.shortcutValueChange = { (sender) in
+        // example code to act on hotkey change
+//        shortcutView.shortcutValueChange = { (sender) in
+//
+//            let callback: (() -> Void)!
+//
+//            if self.shortcutView.shortcutValue?.keyCodeStringForKeyEquivalent == "k" {
+//                callback = {
+//                    print("K shortcut handler")
+//                }
+//            } else {
+//                callback = {
+//                    print("Default handler")
+//                }
+//            }
+//        }
 
-            let callback: (() -> Void)!
-
-            if self.shortcutView.shortcutValue?.keyCodeStringForKeyEquivalent == "k" {
-                callback = {
-                    print("K shortcut handler")
-                }
-            } else {
-                callback = {
-                    print("Default handler")
-                }
-            }
-
-            MASShortcutMonitor.shared().register(self.shortcutView.shortcutValue, withAction:{  self.menuBarItemClicked(self.menuBarItem.button!);
-            })
-        }
+        MASShortcutMonitor.shared().register(self.shortcutView.shortcutValue, withAction:{  self.menuBarItemClicked(self.menuBarItem.button!);
+        })
     }
 
     @objc func menuBarItemClicked(_ sender: NSStatusBarButton) {

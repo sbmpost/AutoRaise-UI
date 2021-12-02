@@ -13,9 +13,7 @@
 		C557DD481B988ED300E59BC9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C557DD461B988ED300E59BC9 /* MainMenu.xib */; };
 		C58DC14525FCEBBB00084C22 /* AutoRaise in Resources */ = {isa = PBXBuildFile; fileRef = C58DC14425FCEBBB00084C22 /* AutoRaise */; };
 		C58DC14D25FCF1C100084C22 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = C58DC14C25FCF1C100084C22 /* README.md */; };
-		C597C84C2753973C0058F42D /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = C597C84B2753973C0058F42D /* HotKey */; };
 		C597C850275398DA0058F42D /* MASShortcut in Frameworks */ = {isa = PBXBuildFile; productRef = C597C84F275398DA0058F42D /* MASShortcut */; };
-		C5BD4343275391060026D403 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = C5BD4342275391060026D403 /* KeyboardShortcuts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,8 +33,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C597C850275398DA0058F42D /* MASShortcut in Frameworks */,
-				C597C84C2753973C0058F42D /* HotKey in Frameworks */,
-				C5BD4343275391060026D403 /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,8 +95,6 @@
 			);
 			name = AutoRaise;
 			packageProductDependencies = (
-				C5BD4342275391060026D403 /* KeyboardShortcuts */,
-				C597C84B2753973C0058F42D /* HotKey */,
 				C597C84F275398DA0058F42D /* MASShortcut */,
 			);
 			productName = AutoRaise;
@@ -135,8 +129,6 @@
 			);
 			mainGroup = C557DD341B988ED300E59BC9;
 			packageReferences = (
-				C5BD4341275391060026D403 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
-				C597C84A2753973C0058F42D /* XCRemoteSwiftPackageReference "HotKey" */,
 				C597C84E275398DA0058F42D /* XCRemoteSwiftPackageReference "MASShortcut" */,
 			);
 			productRefGroup = C557DD3E1B988ED300E59BC9 /* Products */;
@@ -335,7 +327,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.5.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.brummelhook.AutoRaise;
 				PRODUCT_NAME = AutoRaise;
@@ -364,7 +356,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.5.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.brummelhook.AutoRaise;
 				PRODUCT_NAME = AutoRaise;
@@ -399,14 +391,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		C597C84A2753973C0058F42D /* XCRemoteSwiftPackageReference "HotKey" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/soffes/HotKey";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.3;
-			};
-		};
 		C597C84E275398DA0058F42D /* XCRemoteSwiftPackageReference "MASShortcut" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/rampatra/MASShortcut";
@@ -415,31 +399,13 @@
 				minimumVersion = 2.4.1;
 			};
 		};
-		C5BD4341275391060026D403 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
-			requirement = {
-				kind = exactVersion;
-				version = 1.1.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C597C84B2753973C0058F42D /* HotKey */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C597C84A2753973C0058F42D /* XCRemoteSwiftPackageReference "HotKey" */;
-			productName = HotKey;
-		};
 		C597C84F275398DA0058F42D /* MASShortcut */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C597C84E275398DA0058F42D /* XCRemoteSwiftPackageReference "MASShortcut" */;
 			productName = MASShortcut;
-		};
-		C5BD4342275391060026D403 /* KeyboardShortcuts */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C5BD4341275391060026D403 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
-			productName = KeyboardShortcuts;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
