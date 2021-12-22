@@ -102,6 +102,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menuItemQuit.title = "Quit"
         menuItemQuit.action = #selector(quitApplication(_:))
         menu.addItem(menuItemQuit)
+
     }
 
     func updateHotkey(){
@@ -119,7 +120,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func menuBarItemClicked(_ sender: NSStatusBarButton) {
         let event = NSApp.currentEvent!
         if event.type == NSEvent.EventType.rightMouseUp {
-            menuBarItem.popUpMenu(menu)
+            menuBarItem.menu = menu
+            menuBarItem.button?.performClick(nil)
+            menuBarItem.menu = nil
         } else {
             toggleService()
         }
