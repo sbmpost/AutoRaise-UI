@@ -1,3 +1,6 @@
 AutoRaise
 *.xcuserstate
-AutoRaise.xcodeproj/project.xcworkspace/xcuserdata/lhaeger.xcuserdatad/UserInterfaceState.xcuserstate
+AutoRaise.xcodeproj/project.xcworkspace/xcuserdata/
+.DS_Store
+AutoRaise.xcodeproj/xcuserdata/
+Pods/

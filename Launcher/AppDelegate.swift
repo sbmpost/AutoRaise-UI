@@ -2,7 +2,7 @@
  *
  * AutoRaise Launcher
  *
- * Copyright (c) 2021 Lothar Haeger
+ * Copyright (c) 2022 Lothar Haeger, Stefan Post (sbmpost)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ import CoreServices
 import Cocoa
 import Foundation
 import AppKit
-import MASShortcut
 
 class URLButton: NSButton {
     override func resetCursorRects() {
@@ -41,6 +40,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var delaySlider: NSSlider!
     @IBOutlet weak var enableWarpButton: NSButton!
     @IBOutlet weak var enableCurserScalingButton: NSButton!
+    @IBOutlet weak var enableMouseStopButton: NSButton!
     @IBOutlet weak var enableOnLaunchButton: NSButton!
     @IBOutlet weak var openAtLoginButton: NSButton!
     @IBOutlet weak var shortcutView: MASShortcutView!
@@ -48,16 +48,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // About
     @IBOutlet weak var aboutText: NSTextField!
     @IBOutlet weak var homePage: URLButton!
-
+    @IBOutlet weak var autoRaisePage: URLButton!
+    
     let appVersionString: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 2.5.0, 2021-12-02\n\n" +
-        "©2021 Stefan Post, Lothar Haeger\n" +
+        "Version 3.4.0, 2022-06-31\n\n" +
+        "©2022 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
-    
+
     let homePageUrl = "https://github.com/lhaeger/AutoRaise"
+    let autoRaiseUrl = "https://github.com/sbmpost/AutoRaise"
 
     let prefs = UserDefaults.standard
 
@@ -66,20 +68,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var menu: NSMenu = NSMenu()
     var menuItemPrefs : NSMenuItem = NSMenuItem()
     var menuItemQuit : NSMenuItem = NSMenuItem()
-    var autoRaiseUrl : URL!
     var autoRaiseService: Process = Process()
 
-    var autoRaiseDelay : NSInteger = 40
+    var autoRaiseDelay : NSInteger = 0
     var enableWarp = NSControl.StateValue.off
     var enableCursorScaling = NSControl.StateValue.off
+    var enableMouseStop = NSControl.StateValue.off
     var enableOnLaunch = NSControl.StateValue.off
     var openAtLogin = NSControl.StateValue.off
 
     let icon = NSImage(named: "MenuIcon")
     let iconRunning = NSImage(named: "MenuIconRunning")
+    let delayStepMs = 50
 
     override func awakeFromNib() {
-
         // Build status bar menu
         menuBarItem = statusBar.statusItem(withLength: NSStatusItem.variableLength)
         menuBarItem.button?.title = ""
@@ -102,12 +104,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menuItemQuit.title = "Quit"
         menuItemQuit.action = #selector(quitApplication(_:))
         menu.addItem(menuItemQuit)
-
     }
 
-    func updateHotkey(){
-
-    }
+    func updateHotkey() { }
 
     func toggleService() {
         if autoRaiseService.isRunning {
@@ -140,7 +139,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @IBAction func autoRaiseDelay(_ sender: Any) {
         autoRaiseDelay = delaySlider.integerValue
-        delaySliderLabel.stringValue = "Delay window activation for " + String(autoRaiseDelay) + " ms"
+        if (autoRaiseDelay == 0) {
+            delaySliderLabel.stringValue = "Window raise disabled (focus only)"
+        } else {
+            delaySliderLabel.stringValue = "Delay window raise for " + String(
+                delayStepMs*(autoRaiseDelay/delayStepMs - 1)) + " ms"
+        }
         self.prefs.set(autoRaiseDelay, forKey: "autoRaiseDelay")
         if autoRaiseService.isRunning {
             self.stopService(self)
@@ -167,13 +171,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    @IBAction func enableMouseStop(_ sender: NSButton) {
+        enableMouseStop = enableMouseStopButton.state
+        self.prefs.set(enableMouseStop == NSControl.StateValue.on ? "1" : "0", forKey: "enableMouseStop")
+        if autoRaiseService.isRunning {
+            self.stopService(self)
+            self.startService(self)
+        }
+    }
+
     func readPreferences() {
+        autoRaiseDelay = prefs.integer(forKey: "autoRaiseDelay")
         if let rawValue = prefs.string(forKey: "enableWarp") {
             enableWarp = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
-            autoRaiseDelay = prefs.integer(forKey: "autoRaiseDelay")
         }
         if let rawValue = prefs.string(forKey: "enableCursorScaling") {
             enableCursorScaling = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
+        }
+        if let rawValue = prefs.string(forKey: "enableMouseStop") {
+            enableMouseStop = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
         if let rawValue = prefs.string(forKey: "enableOnLaunch") {
             enableOnLaunch = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
@@ -181,11 +197,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let rawValue = prefs.string(forKey: "openAtLogin") {
             openAtLogin = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
-        delaySliderLabel.stringValue = "Delay window activation for " + String(autoRaiseDelay) + " ms"
+        if (autoRaiseDelay == 0) {
+            delaySliderLabel.stringValue = "Window raise disabled (focus only)"
+        } else {
+            delaySliderLabel.stringValue = "Delay window raise for " + String(
+                delayStepMs*(autoRaiseDelay/delayStepMs - 1)) + " ms"
+        }
         enableOnLaunchButton.state = enableOnLaunch
         openAtLoginButton.state = openAtLogin
         enableWarpButton.state = enableWarp
         enableCurserScalingButton.state = enableCursorScaling
+        enableMouseStopButton.state = enableMouseStop
         if enableWarp == NSControl.StateValue.on {
             enableCurserScalingButton.isEnabled = true
         } else {
@@ -199,8 +221,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSWorkspace.shared.open(url)
     }
     
+    @IBAction func autoRaisePagePressed(_ sender: NSButton) {
+        let url = URL(string: autoRaiseUrl)!
+        NSWorkspace.shared.open(url)
+    }
+
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        
         window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(CGWindowLevelKey.floatingWindow)))
 
         menuBarItem.button?.image = icon
@@ -227,7 +253,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.startService(self)
         }
 
-       // update about tab contents
+        // update about tab contents
         aboutText.stringValue = appAbout
         // homepage link
         let pstyle = NSMutableParagraphStyle()
@@ -238,8 +264,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                           NSAttributedString.Key.foregroundColor: NSColor.blue,
                           NSAttributedString.Key.underlineStyle: 1,
                           NSAttributedString.Key.paragraphStyle: pstyle])
+        autoRaisePage.attributedTitle = NSAttributedString(
+            string: autoRaiseUrl,
+            attributes: [ NSAttributedString.Key.font: NSFont.systemFont(ofSize: 13.0),
+                          NSAttributedString.Key.foregroundColor: NSColor.blue,
+                          NSAttributedString.Key.underlineStyle: 1,
+                          NSAttributedString.Key.paragraphStyle: pstyle])
     }
-    
+
     func applicationWillTerminate(_ aNotification: Notification) {
         stopService(self)
         MASShortcutMonitor.shared().unregisterAllShortcuts()
@@ -266,7 +298,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let autoRaiseCmd = Bundle.main.url(forResource: "AutoRaise", withExtension: "")
             if FileManager().fileExists(atPath: autoRaiseCmd!.path) {
                 autoRaiseService.launchPath = autoRaiseCmd?.path
-                autoRaiseService.arguments = ["-delay", String(autoRaiseDelay / 20)]
+                autoRaiseService.arguments = ["-delay", String(autoRaiseDelay / delayStepMs)]
                 if ( enableWarp == NSControl.StateValue.on ) {
                     autoRaiseService.arguments! += ["-warpX", "0.5", "-warpY", "0.5"]
                     if ( enableCursorScaling == NSControl.StateValue.on ) {
@@ -274,6 +306,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     } else {
                         autoRaiseService.arguments! += ["-scale", "1.0"]
                     }
+                }
+                if ( enableMouseStop == NSControl.StateValue.on ) {
+                    autoRaiseService.arguments! += ["-mouseStop", "true"]
                 }
             }
             autoRaiseService.launch()

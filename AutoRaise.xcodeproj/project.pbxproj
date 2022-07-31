@@ -3,20 +3,24 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 48;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C48B479C6CCD1E264E32A409 /* Pods_AutoRaise.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5806E42520E49707EF8523A9 /* Pods_AutoRaise.framework */; };
 		C501B69525875F32005B3964 /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = C501B69425875F32005B3964 /* LICENSE.md */; };
 		C557DD431B988ED300E59BC9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C557DD421B988ED300E59BC9 /* AppDelegate.swift */; };
 		C557DD451B988ED300E59BC9 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C557DD441B988ED300E59BC9 /* Images.xcassets */; };
 		C557DD481B988ED300E59BC9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C557DD461B988ED300E59BC9 /* MainMenu.xib */; };
 		C58DC14525FCEBBB00084C22 /* AutoRaise in Resources */ = {isa = PBXBuildFile; fileRef = C58DC14425FCEBBB00084C22 /* AutoRaise */; };
 		C58DC14D25FCF1C100084C22 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = C58DC14C25FCF1C100084C22 /* README.md */; };
-		C597C850275398DA0058F42D /* MASShortcut in Frameworks */ = {isa = PBXBuildFile; productRef = C597C84F275398DA0058F42D /* MASShortcut */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3676C4DAF7DC0223742E288E /* Pods-AutoRaise.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AutoRaise.debug.xcconfig"; path = "Target Support Files/Pods-AutoRaise/Pods-AutoRaise.debug.xcconfig"; sourceTree = "<group>"; };
+		5806E42520E49707EF8523A9 /* Pods_AutoRaise.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AutoRaise.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		85F5281428968D4F00C99435 /* AutoRaise-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AutoRaise-Bridging-Header.h"; sourceTree = "<group>"; };
+		953A47BDA38A2BC722250B9D /* Pods-AutoRaise.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AutoRaise.release.xcconfig"; path = "Target Support Files/Pods-AutoRaise/Pods-AutoRaise.release.xcconfig"; sourceTree = "<group>"; };
 		C501B69425875F32005B3964 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		C557DD3D1B988ED300E59BC9 /* AutoRaise.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AutoRaise.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C557DD421B988ED300E59BC9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -32,21 +36,41 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C597C850275398DA0058F42D /* MASShortcut in Frameworks */,
+				C48B479C6CCD1E264E32A409 /* Pods_AutoRaise.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		696712223BD4FFAEDC9705D0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3676C4DAF7DC0223742E288E /* Pods-AutoRaise.debug.xcconfig */,
+				953A47BDA38A2BC722250B9D /* Pods-AutoRaise.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		8F1D171571F9FEC6219E58F6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5806E42520E49707EF8523A9 /* Pods_AutoRaise.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C557DD341B988ED300E59BC9 = {
 			isa = PBXGroup;
 			children = (
+				85F5281428968D4F00C99435 /* AutoRaise-Bridging-Header.h */,
 				C58DC14C25FCF1C100084C22 /* README.md */,
 				C58DC14425FCEBBB00084C22 /* AutoRaise */,
 				C501B69425875F32005B3964 /* LICENSE.md */,
 				C557DD3F1B988ED300E59BC9 /* Launcher */,
 				C557DD3E1B988ED300E59BC9 /* Products */,
+				696712223BD4FFAEDC9705D0 /* Pods */,
+				8F1D171571F9FEC6219E58F6 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -84,19 +108,18 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C557DD571B988ED300E59BC9 /* Build configuration list for PBXNativeTarget "AutoRaise" */;
 			buildPhases = (
+				328A8E4EC85FBFD98D10494A /* [CP] Check Pods Manifest.lock */,
 				C5543C5325CFF41A0093A39E /* ShellScript */,
 				C557DD391B988ED300E59BC9 /* Sources */,
 				C557DD3A1B988ED300E59BC9 /* Frameworks */,
 				C557DD3B1B988ED300E59BC9 /* Resources */,
+				9EF240EA4411AC4639E72CBA /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = AutoRaise;
-			packageProductDependencies = (
-				C597C84F275398DA0058F42D /* MASShortcut */,
-			);
 			productName = AutoRaise;
 			productReference = C557DD3D1B988ED300E59BC9 /* AutoRaise.app */;
 			productType = "com.apple.product-type.application";
@@ -128,9 +151,6 @@
 				Base,
 			);
 			mainGroup = C557DD341B988ED300E59BC9;
-			packageReferences = (
-				C597C84E275398DA0058F42D /* XCRemoteSwiftPackageReference "MASShortcut" */,
-			);
 			productRefGroup = C557DD3E1B988ED300E59BC9 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -156,6 +176,46 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		328A8E4EC85FBFD98D10494A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AutoRaise-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9EF240EA4411AC4639E72CBA /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AutoRaise/Pods-AutoRaise-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/MASShortcut/MASShortcut.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MASShortcut.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AutoRaise/Pods-AutoRaise-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		C5543C5325CFF41A0093A39E /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -171,7 +231,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "g++ -O2 -Wall -fobjc-arc -o AutoRaise AutoRaise.mm -framework AppKit\n";
+			shellScript = "g++ -O2 -Wall -fobjc-arc -D\"NS_FORMAT_ARGUMENT(A)=\" -DSKYLIGHT_AVAILABLE=1 -DEXPERIMENTAL_FOCUS_FIRST -o AutoRaise AutoRaise.mm -framework AppKit -F /System/Library/PrivateFrameworks -framework SkyLight\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -252,6 +312,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "AutoRaise-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -304,14 +365,15 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OBJC_BRIDGING_HEADER = "AutoRaise-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
 		C557DD581B988ED300E59BC9 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3676C4DAF7DC0223742E288E /* Pods-AutoRaise.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -322,18 +384,15 @@
 				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Launcher/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 2.5.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 3.4.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.brummelhook.AutoRaise;
 				PRODUCT_NAME = AutoRaise;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "AutoRaise-Bridging-Header.h";
+				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -341,6 +400,7 @@
 		};
 		C557DD591B988ED300E59BC9 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 953A47BDA38A2BC722250B9D /* Pods-AutoRaise.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -351,18 +411,15 @@
 				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Launcher/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 2.5.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 3.4.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.brummelhook.AutoRaise;
 				PRODUCT_NAME = AutoRaise;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "AutoRaise-Bridging-Header.h";
+				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -389,25 +446,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		C597C84E275398DA0058F42D /* XCRemoteSwiftPackageReference "MASShortcut" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/rampatra/MASShortcut";
-			requirement = {
-				kind = exactVersion;
-				version = 2.4.1;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		C597C84F275398DA0058F42D /* MASShortcut */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C597C84E275398DA0058F42D /* XCRemoteSwiftPackageReference "MASShortcut" */;
-			productName = MASShortcut;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C557DD351B988ED300E59BC9 /* Project object */;
 }

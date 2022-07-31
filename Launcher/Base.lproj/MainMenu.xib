@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19455" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19455"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -16,9 +16,11 @@
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="AutoRaise" customModuleProvider="target">
             <connections>
                 <outlet property="aboutText" destination="4Je-U3-qzh" id="AWu-SI-jKW"/>
+                <outlet property="autoRaisePage" destination="7By-JM-Dru" id="Mmy-kf-pvS"/>
                 <outlet property="delaySlider" destination="8iB-Ot-QXU" id="3M1-Uc-xjp"/>
                 <outlet property="delaySliderLabel" destination="sv0-cx-SO9" id="AbN-yC-qlk"/>
                 <outlet property="enableCurserScalingButton" destination="lA4-hc-8Qh" id="but-pb-qHD"/>
+                <outlet property="enableMouseStopButton" destination="Cvm-0Q-cR9" id="79A-5F-UZx"/>
                 <outlet property="enableOnLaunchButton" destination="uTn-Xu-dZ3" id="8nJ-IV-HrL"/>
                 <outlet property="enableWarpButton" destination="BQn-Wh-SrZ" id="Tll-pG-Jm9"/>
                 <outlet property="homePage" destination="Uxy-EO-1u0" id="okw-cw-SmL"/>
@@ -681,41 +683,41 @@
         <window identifier="prefsWindow" title="AutoRaise Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="390" width="546" height="277"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1536" height="935"/>
+            <rect key="contentRect" x="335" y="390" width="546" height="324"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1344" height="815"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="546" height="277"/>
+                <rect key="frame" x="0.0" y="0.0" width="546" height="324"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView id="2ZC-t0-UJb">
-                        <rect key="frame" x="13" y="10" width="520" height="261"/>
+                        <rect key="frame" x="13" y="2" width="520" height="316"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Settings" identifier="1" id="prW-6p-c3W">
                                 <view key="view" id="YLs-I7-lL0">
-                                    <rect key="frame" x="10" y="33" width="500" height="215"/>
+                                    <rect key="frame" x="10" y="33" width="500" height="270"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8iB-Ot-QXU">
-                                            <rect key="frame" x="29" y="149" width="437" height="24"/>
+                                            <rect key="frame" x="29" y="204" width="437" height="28"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <sliderCell key="cell" state="on" alignment="left" maxValue="200" doubleValue="40" tickMarkPosition="above" numberOfTickMarks="11" allowsTickMarkValuesOnly="YES" sliderType="linear" id="g6c-a1-Vmj"/>
+                                            <sliderCell key="cell" state="on" alignment="left" maxValue="500" tickMarkPosition="above" numberOfTickMarks="11" allowsTickMarkValuesOnly="YES" sliderType="linear" id="g6c-a1-Vmj"/>
                                             <connections>
                                                 <action selector="autoRaiseDelay:" target="Voe-Tx-rLC" id="Whv-Tg-BGO"/>
                                             </connections>
                                         </slider>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="sv0-cx-SO9">
-                                            <rect key="frame" x="29" y="181" width="251" height="16"/>
+                                            <rect key="frame" x="29" y="236" width="251" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Delay window activation for 20 ms" id="oGO-D2-O9I">
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Delay window raise for 50 ms" id="oGO-D2-O9I">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" id="BQn-Wh-SrZ">
-                                            <rect key="frame" x="29" y="118" width="410" height="18"/>
+                                            <rect key="frame" x="29" y="173" width="410" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" title="Warp mouse pointer to center of activated windows" bezelStyle="regularSquare" imagePosition="left" inset="2" id="c2G-na-Rzs">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -737,7 +739,7 @@
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" id="lA4-hc-8Qh">
-                                            <rect key="frame" x="61" y="97" width="373" height="18"/>
+                                            <rect key="frame" x="48" y="143" width="373" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" title="Temporarily increase cursor size after warping" bezelStyle="regularSquare" imagePosition="left" inset="2" id="KC9-fr-Baa">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -748,7 +750,7 @@
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" id="uTn-Xu-dZ3">
-                                            <rect key="frame" x="29" y="72" width="410" height="18"/>
+                                            <rect key="frame" x="29" y="76" width="410" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" title="Enable AutoRaise on launch" bezelStyle="regularSquare" imagePosition="left" inset="2" id="OgB-hb-QVC">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -759,7 +761,7 @@
                                             </connections>
                                         </button>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vpg-yD-SCS">
-                                            <rect key="frame" x="29" y="23" width="233" height="16"/>
+                                            <rect key="frame" x="29" y="39" width="233" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Keyboard shortcut to enable/disable " id="n7U-zS-Q1I">
                                                 <font key="font" metaFont="system"/>
@@ -768,28 +770,53 @@
                                             </textFieldCell>
                                         </textField>
                                         <customView identifier="shortcutKeyView" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="031-xd-XPj" customClass="MASShortcutView">
-                                            <rect key="frame" x="268" y="19" width="131" height="24"/>
+                                            <rect key="frame" x="268" y="35" width="131" height="24"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </customView>
+                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Cvm-0Q-cR9">
+                                            <rect key="frame" x="29" y="109" width="360" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="check" title="Require mouse to stop for a moment before raise/focus" bezelStyle="regularSquare" imagePosition="left" inset="2" id="nST-1O-BWx">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="enableMouseStop:" target="Voe-Tx-rLC" id="nEU-Zq-3dt"/>
+                                            </connections>
+                                        </button>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="htH-u0-Iwf">
+                                            <rect key="frame" x="29" y="15" width="370" height="16"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Note: Disable AutoRaise temporarily by holding the cmd key " id="iB3-vv-QdX">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
                                     </subviews>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="About" identifier="" id="8wr-bA-jie">
                                 <view key="view" id="97y-CL-YXi">
-                                    <rect key="frame" x="10" y="33" width="500" height="215"/>
+                                    <rect key="frame" x="10" y="33" width="500" height="270"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="YES" id="4Je-U3-qzh">
-                                            <rect key="frame" x="36" y="95" width="428" height="98"/>
+                                            <rect key="frame" x="94" y="171" width="313" height="80"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="About" id="Nuf-Kj-M4U">
+                                            <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" id="Nuf-Kj-M4U">
                                                 <font key="font" metaFont="system"/>
+                                                <string key="title">AutoRaise &amp; Launcher
+Version 3.4.0, 2022-06-31
+
+ ©2022 Stefan Post, Lothar Haeger
+Icons made by https://www.flaticon.com/authors/fr</string>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
                                         <button id="Uxy-EO-1u0" customClass="URLButton" customModule="AutoRaise" customModuleProvider="target">
-                                            <rect key="frame" x="38" y="73" width="424" height="23"/>
+                                            <rect key="frame" x="38" y="112" width="424" height="23"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="bevel" title="link to home page" bezelStyle="rounded" alignment="center" controlSize="mini" imageScaling="proportionallyDown" inset="2" id="XAc-wo-4Fd">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -799,19 +826,37 @@
                                                 <action selector="homePagePressed:" target="Voe-Tx-rLC" id="eXz-v2-KR6"/>
                                             </connections>
                                         </button>
-                                        <imageView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DNI-vh-IrR">
-                                            <rect key="frame" x="17" y="131" width="91" height="81"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <imageView translatesAutoresizingMaskIntoConstraints="NO" id="DNI-vh-IrR">
+                                            <rect key="frame" x="17" y="161" width="91" height="97"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="91" id="PfK-lw-U6B"/>
+                                            </constraints>
                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="AboutIcon" id="vI3-KZ-8qJ"/>
                                         </imageView>
+                                        <button id="7By-JM-Dru" customClass="URLButton" customModule="AutoRaise" customModuleProvider="target">
+                                            <rect key="frame" x="38" y="130" width="424" height="23"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="bevel" title="link to home page" bezelStyle="rounded" alignment="center" controlSize="mini" imageScaling="proportionallyDown" inset="2" id="PJq-pR-kv0">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="autoRaisePagePressed:" target="Voe-Tx-rLC" id="AnI-si-0mt"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="Uxy-EO-1u0" firstAttribute="top" secondItem="DNI-vh-IrR" secondAttribute="bottom" constant="26" id="KI8-Mb-QTd"/>
+                                        <constraint firstItem="DNI-vh-IrR" firstAttribute="leading" secondItem="97y-CL-YXi" secondAttribute="leading" constant="17" id="M6W-3Q-Sip"/>
+                                        <constraint firstItem="DNI-vh-IrR" firstAttribute="top" secondItem="97y-CL-YXi" secondAttribute="top" constant="12" id="azQ-r5-FQL"/>
+                                    </constraints>
                                 </view>
                             </tabViewItem>
                         </tabViewItems>
                     </tabView>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="-66" y="-55.5"/>
+            <point key="canvasLocation" x="-66" y="-197"/>
         </window>
     </objects>
     <resources>

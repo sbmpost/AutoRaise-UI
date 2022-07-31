@@ -36,7 +36,7 @@ Simply clone, open and build this project in XCode.
 
 Like upstream XCode will first build the AutoRaise binary by running
 
-`g++ -O2 -Wall -fobjc-arc -o AutoRaise AutoRaise.mm -framework AppKit`
+`g++ -O2 -Wall -fobjc-arc -D"NS_FORMAT_ARGUMENT(A)=" -DSKYLIGHT_AVAILABLE=1 -DEXPERIMENTAL_FOCUS_FIRST -DALTERNATIVE_TASK_SWITCHER -DOLD_ACTIVATION_METHOD -o AutoRaise AutoRaise.mm -framework AppKit -F /System/Library/PrivateFrameworks -framework SkyLight`
 
 and include it when finally building the Launcher app bundle (AutoRaise.app).
 
