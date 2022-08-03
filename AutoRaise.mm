@@ -28,7 +28,7 @@
 #include <Carbon/Carbon.h>
 #include <libproc.h>
 
-#define AUTORAISE_VERSION "3.4"
+#define AUTORAISE_VERSION "3.5"
 #define STACK_THRESHOLD 20
 
 #define __MAC_11_06_0 110600
@@ -114,7 +114,7 @@ static CGPoint desktopOrigin = {0, 0};
 static CGPoint oldPoint = {0, 0};
 static bool spaceHasChanged = false;
 static bool appWasActivated = false;
-static bool mouseStop = false;
+static bool altTaskSwitcher = false;
 static bool warpMouse = false;
 static bool verbose = false;
 static float warpX = 0.5;
@@ -124,6 +124,9 @@ static float cursorScale = 2;
 static int raiseTimes = 0;
 static int delayTicks = 0;
 static int delayCount = 0;
+#ifdef FOCUS_FIRST
+static int raiseDelayCount = 0;
+#endif
 
 //----------------------------------------yabai focus only methods------------------------------------------
 
@@ -607,10 +610,10 @@ static MDWorkspaceWatcher * workspaceWatcher = NULL;
 
 #ifdef FOCUS_FIRST
 - (void)windowFocused:(AXUIElementRef)_window {
-    if (verbose) { NSLog(@"Window focused, waiting %0.3fs", delayCount*POLLING_MS/1000.0); }
+    if (verbose) { NSLog(@"Window focused, waiting %0.3fs", raiseDelayCount*POLLING_MS/1000.0); }
     [self performSelector: @selector(onWindowFocused:)
         withObject: [NSNumber numberWithUnsignedLong: (uint64_t) _window]
-        afterDelay: delayCount*POLLING_MS/1000.0];
+        afterDelay: raiseDelayCount*POLLING_MS/1000.0];
 }
 
 - (void)onWindowFocused:(NSNumber *)_window {
@@ -628,8 +631,13 @@ const NSString *kWarpX = @"warpX";
 const NSString *kWarpY = @"warpY";
 const NSString *kScale = @"scale";
 const NSString *kVerbose = @"verbose";
-const NSString *kMouseStop = @"mouseStop";
-NSArray *parametersDictionary = @[kDelay, kWarpX, kWarpY, kScale, kVerbose, kMouseStop];
+const NSString *kAltTaskSwitcher = @"altTaskSwitcher";
+#ifdef FOCUS_FIRST
+const NSString *kFocusDelay = @"focusDelay";
+NSArray *parametersDictionary = @[kDelay, kWarpX, kWarpY, kScale, kVerbose, kAltTaskSwitcher, kFocusDelay];
+#else
+NSArray *parametersDictionary = @[kDelay, kWarpX, kWarpY, kScale, kVerbose, kAltTaskSwitcher];
+#endif
 NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
 
 @interface ConfigClass:NSObject
@@ -724,18 +732,31 @@ NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
 
 - (void) validateParameters {
     // validate and fix wrong/absent parameters
-    if (!parameters[kDelay]) { parameters[kDelay] = @"1"; }
+#ifdef FOCUS_FIRST
+    if (!parameters[kFocusDelay] && !parameters[kDelay]) {
+#else
+    if (!parameters[kDelay]) {
+#endif
+        parameters[kDelay] = @"1";
+    }
     if ([parameters[kScale] floatValue] < 1) { parameters[kScale] = @"2.0"; }
     warpMouse =
         parameters[kWarpX] && [parameters[kWarpX] floatValue] >= 0 && [parameters[kWarpX] floatValue] <= 1 &&
         parameters[kWarpY] && [parameters[kWarpY] floatValue] >= 0 && [parameters[kWarpY] floatValue] <= 1;
-#ifndef FOCUS_FIRST
+#ifdef ALTERNATIVE_TASK_SWITCHER
+    if (!parameters[kAltTaskSwitcher]) { parameters[kAltTaskSwitcher] = @"true"; }
+#endif
+#ifdef FOCUS_FIRST
+    if (![parameters[kDelay] intValue] && !parameters[kFocusDelay]) { parameters[kFocusDelay] = @"1"; }
+    if (!parameters[kDelay] && ![parameters[kFocusDelay] intValue]) { parameters[kDelay] = @"1"; }
+    if (![parameters[kFocusDelay] intValue] && ![parameters[kDelay] intValue] && !warpMouse) {
+#else
     if (![parameters[kDelay] intValue] && !warpMouse) {
+#endif
         parameters[kWarpX] = @"0.5";
         parameters[kWarpY] = @"0.5";
         warpMouse = true;
     }
-#endif
     return;
 }
 @end // ConfigClass
@@ -749,10 +770,10 @@ void spaceChanged() {
 
 bool appActivated() {
     if (verbose) { NSLog(@"App activated"); }
-#ifndef ALTERNATIVE_TASK_SWITCHER
-    if (!activated_by_task_switcher) { return false; }
-    activated_by_task_switcher = false;
-#endif
+    if (!altTaskSwitcher) {
+        if (!activated_by_task_switcher) { return false; }
+        activated_by_task_switcher = false;
+    }
     appWasActivated = true;
 
     NSRunningApplication *frontmostApp = [[NSWorkspace sharedWorkspace] frontmostApplication];
@@ -783,43 +804,43 @@ bool appActivated() {
         } else { _activatedWindow = _previousFinderWindow; }
     }
 
-#ifdef ALTERNATIVE_TASK_SWITCHER
-    CGEventRef _event = CGEventCreate(NULL);
-    CGPoint mousePoint = CGEventGetLocation(_event);
-    if (_event) { CFRelease(_event); }
+    if (altTaskSwitcher) {
+        CGEventRef _event = CGEventCreate(NULL);
+        CGPoint mousePoint = CGEventGetLocation(_event);
+        if (_event) { CFRelease(_event); }
 
-    bool ignoreActivated = false;
-    AXUIElementRef _mouseWindow = get_mousewindow(mousePoint);
-    if (_mouseWindow) {
-        if (!activated_by_task_switcher) {
-            // Checking for mouse movement reduces the problem of the mouse being warped
-            // when changing spaces and simultaneously moving the mouse to another screen
-            ignoreActivated = fabs(mousePoint.x-oldPoint.x) > 0;
-            ignoreActivated = ignoreActivated || fabs(mousePoint.y-oldPoint.y) > 0;
+        bool ignoreActivated = false;
+        AXUIElementRef _mouseWindow = get_mousewindow(mousePoint);
+        if (_mouseWindow) {
+            if (!activated_by_task_switcher) {
+                // Checking for mouse movement reduces the problem of the mouse being warped
+                // when changing spaces and simultaneously moving the mouse to another screen
+                ignoreActivated = fabs(mousePoint.x-oldPoint.x) > 0;
+                ignoreActivated = ignoreActivated || fabs(mousePoint.y-oldPoint.y) > 0;
+            }
+            if (!ignoreActivated) {
+                // Check if the mouse is already hovering above the frontmost app. If
+                // for example we only change spaces, we don't want the mouse to warp
+                pid_t mouseWindow_pid;
+                ignoreActivated = AXUIElementGetPid(_mouseWindow,
+                    &mouseWindow_pid) == kAXErrorSuccess &&
+                    mouseWindow_pid == frontmost_pid;
+            }
+            CFRelease(_mouseWindow);
+        } else { // dock or top menu
+            // Comment the line below if clicking the dock icons should also
+            // warp the mouse. Note this may introduce some unexpected warps
+            ignoreActivated = true;
         }
-        if (!ignoreActivated) {
-            // Check if the mouse is already hovering above the frontmost app. If
-            // for example we only change spaces, we don't want the mouse to warp
-            pid_t mouseWindow_pid;
-            ignoreActivated = AXUIElementGetPid(_mouseWindow,
-                &mouseWindow_pid) == kAXErrorSuccess &&
-                mouseWindow_pid == frontmost_pid;
+
+        activated_by_task_switcher = false; // used in the previous code block
+
+        if (ignoreActivated) {
+            if (verbose) { NSLog(@"Ignoring app activated"); }
+            if (!finder_app && _activatedWindow) { CFRelease(_activatedWindow); }
+            return false;
         }
-        CFRelease(_mouseWindow);
-    } else { // dock or top menu
-        // Comment the line below if clicking the dock icons should also
-        // warp the mouse. Note this may introduce some unexpected warps
-        ignoreActivated = true;
     }
-
-    activated_by_task_switcher = false; // used in the previous code block
-
-    if (ignoreActivated) {
-        if (verbose) { NSLog(@"Ignoring app activated"); }
-        if (!finder_app && _activatedWindow) { CFRelease(_activatedWindow); }
-        return false;
-    }
-#endif
 
     if (_activatedWindow) {
         if (verbose) { NSLog(@"Warp mouse"); }
@@ -843,11 +864,11 @@ void onTick() {
     bool mouseMoved = fabs(mouse_x_diff) > 0;
     mouseMoved = mouseMoved || fabs(mouse_y_diff) > 0;
 
-#ifdef FOCUS_FIRST
-    if (mouseMoved) { delayTicks = 1; }
-#elif defined ALTERNATIVE_TASK_SWITCHER
     // delayCount = 0 -> warp only
-    if (!delayCount) { return; }
+#ifdef FOCUS_FIRST
+    if (altTaskSwitcher && !delayCount && !raiseDelayCount) { return; }
+#else
+    if (altTaskSwitcher && !delayCount) { return; }
 #endif
 
     // delayTicks = 0 -> delay disabled
@@ -890,14 +911,12 @@ void onTick() {
         raiseTimes = 3;
         delayTicks = 0;
         spaceHasChanged = false;
-#ifndef FOCUS_FIRST
     } else if (delayTicks && mouseMoved) {
         delayTicks = 0;
         // propagate the mouseMoved event
         // to restart the delay if needed
         oldPoint.x = oldPoint.y = 0;
         return;
-#endif
     }
 
     // mouseMoved: we have to decide if the window needs raising
@@ -963,19 +982,24 @@ void onTick() {
                             _AXUIElementGetWindow(_focusedWindow, &focusedWindow_id);
                             needs_raise = mouseWindow_id != focusedWindow_id;
 #ifdef FOCUS_FIRST
-                            if (needs_raise) {
-                                needs_raise = raiseTimes || mouseWindow_id != lastFocusedWindow_id;
-                            } else { lastFocusedWindow_id = 0; }
                             if (delayCount) {
-#endif
-                                needs_raise = needs_raise && !contained_within(_focusedWindow, _mouseWindow);
-#ifdef FOCUS_FIRST
+                                if (needs_raise) {
+                                    needs_raise = raiseTimes || mouseWindow_id != lastFocusedWindow_id;
+                                } else { lastFocusedWindow_id = 0; }
+                                if (raiseDelayCount) {
+                                    needs_raise = needs_raise && !contained_within(_focusedWindow, _mouseWindow);
+                                } else {
+                                    needs_raise = needs_raise && main_window(_focusedWindow);
+                                }
+                                if (needs_raise) {
+                                    OSStatus error = GetProcessForPID(frontmost_pid, &focusedWindow_psn);
+                                    if (!error) { _focusedWindow_psn = &focusedWindow_psn; }
+                                }
                             } else {
-                                needs_raise = needs_raise && main_window(_focusedWindow);
-                            }
-                            if (needs_raise) {
-                                OSStatus error = GetProcessForPID(frontmost_pid, &focusedWindow_psn);
-                                if (!error) { _focusedWindow_psn = &focusedWindow_psn; }
+#else
+                                needs_raise = needs_raise && !contained_within(_focusedWindow, _mouseWindow);
+#endif
+#ifdef FOCUS_FIRST
                             }
 #endif
                             CFRelease(_focusedWindow);
@@ -992,30 +1016,26 @@ void onTick() {
                     if (raiseTimes || delayTicks == 1) {
                         delayTicks = 0; // disable delay
 
-                        bool readyForRaise = !mouseStop || !mouseMoved;
-                        if (raiseTimes && readyForRaise) { raiseTimes--; }
+                        if (raiseTimes) { raiseTimes--; }
                         else { raiseTimes = 3; }
-
-                        if (readyForRaise) {
 #ifdef FOCUS_FIRST
-                            if (delayCount != 1) {
-                                OSStatus error = GetProcessForPID(mouseWindow_pid, &mouseWindow_psn);
-                                if (!error) {
-                                    window_manager_focus_window_without_raise(&mouseWindow_psn,
-                                        mouseWindow_id, _focusedWindow_psn, focusedWindow_id);
-                                    if (_lastFocusedWindow) { CFRelease(_lastFocusedWindow); }
-                                    _lastFocusedWindow = _mouseWindow;
-                                    lastFocusedWindow_pid = mouseWindow_pid;
-                                    lastFocusedWindow_id = mouseWindow_id;
-                                    if (delayCount) { [workspaceWatcher windowFocused: _lastFocusedWindow]; }
-                                }
-                            } else {
-#endif
-                                raiseAndActivate(_mouseWindow, mouseWindow_pid);
-#ifdef FOCUS_FIRST
+                        if (delayCount && raiseDelayCount != 1) {
+                            OSStatus error = GetProcessForPID(mouseWindow_pid, &mouseWindow_psn);
+                            if (!error) {
+                                window_manager_focus_window_without_raise(&mouseWindow_psn,
+                                    mouseWindow_id, _focusedWindow_psn, focusedWindow_id);
+                                if (_lastFocusedWindow) { CFRelease(_lastFocusedWindow); }
+                                _lastFocusedWindow = _mouseWindow;
+                                lastFocusedWindow_pid = mouseWindow_pid;
+                                lastFocusedWindow_id = mouseWindow_id;
+                                if (raiseDelayCount) { [workspaceWatcher windowFocused: _lastFocusedWindow]; }
                             }
+                        } else {
 #endif
+                            raiseAndActivate(_mouseWindow, mouseWindow_pid);
+#ifdef FOCUS_FIRST
                         }
+#endif
                     }
                 } else {
                     raiseTimes = 0;
@@ -1059,41 +1079,43 @@ int main(int argc, const char * argv[]) {
     @autoreleasepool {
         printf("\nv%s by sbmpost(c) 2022, usage:\n\nAutoRaise\n", AUTORAISE_VERSION);
         printf("  -delay <0=no-raise, 1=no-delay, 2=%dms, 3=%dms, ...>\n", POLLING_MS, POLLING_MS*2);
+#ifdef FOCUS_FIRST
+        printf("  -focusDelay <0=no-focus, 1=no-delay, 2=%dms, 3=%dms, ...>\n", POLLING_MS, POLLING_MS*2);
+#endif
         printf("  -warpX <0.5> -warpY <0.5> -scale <2.0>\n");
-        printf("  -mouseStop <true|false>\n");
+        printf("  -altTaskSwitcher <true|false>\n");
         printf("  -verbose <true|false>\n\n");
 
         ConfigClass * config = [[ConfigClass alloc] init];
         [config readConfig: argc];
         [config validateParameters];
 
-        delayCount  = [parameters[kDelay] intValue];
-        warpX       = [parameters[kWarpX] floatValue];
-        warpY       = [parameters[kWarpY] floatValue];
-        cursorScale = [parameters[kScale] floatValue];
-        verbose     = [parameters[kVerbose] boolValue];
-        mouseStop   = [parameters[kMouseStop] boolValue];
+        delayCount      = [parameters[kDelay] intValue];
+        warpX           = [parameters[kWarpX] floatValue];
+        warpY           = [parameters[kWarpY] floatValue];
+        cursorScale     = [parameters[kScale] floatValue];
+        verbose         = [parameters[kVerbose] boolValue];
+        altTaskSwitcher = [parameters[kAltTaskSwitcher] boolValue];
 
         printf("Started with:\n");
         if (delayCount) {
             printf("  * delay: %dms\n", (delayCount-1)*POLLING_MS);
-        } else {
-#ifdef FOCUS_FIRST
-            printf("  * warp and focus only (no-raise)\n");
-#else
-            printf("  * warp only (no-raise)\n");
-#endif
         }
+#ifndef FOCUS_FIRST
+        else { printf("  * warp only (no-raise)\n"); }
+#else
+        raiseDelayCount = delayCount;
+        delayCount = [parameters[kFocusDelay] intValue];
+        if (!delayCount) {
+            delayCount = raiseDelayCount;
+            if (!delayCount) { printf("  * warp only (no-focus, no-raise)\n"); }
+        } else { printf("  * focusDelay: %dms\n", (delayCount-1)*POLLING_MS); }
+#endif
+
         if (warpMouse) {
             printf("  * warpX: %.1f, warpY: %.1f, scale: %.1f\n", warpX, warpY, cursorScale);
+            printf("  * altTaskSwitcher: %s\n", altTaskSwitcher ? "true" : "false");
         }
-#ifndef FOCUS_FIRST
-        if (delayCount) {
-#endif
-            printf("  * mouseStop: %s\n", mouseStop ? "true" : "false");
-#ifndef FOCUS_FIRST
-        }
-#endif
         printf("  * verbose: %s\n", verbose ? "true" : "false");
 #if defined OLD_ACTIVATION_METHOD or defined FOCUS_FIRST or defined ALTERNATIVE_TASK_SWITCHER
         printf("\nCompiled with:\n");
@@ -1130,13 +1152,13 @@ int main(int argc, const char * argv[]) {
         if (verbose) { NSLog(@"Got run loop source: %s", runLoopSource ? "YES" : "NO"); }
 
         workspaceWatcher = [[MDWorkspaceWatcher alloc] init];
-#if !defined ALTERNATIVE_TASK_SWITCHER and !defined FOCUS_FIRST
-        if (delayCount) {
+#ifdef FOCUS_FIRST
+        if (altTaskSwitcher || raiseDelayCount || delayCount) {
+#else
+        if (altTaskSwitcher || delayCount) {
 #endif
-        [workspaceWatcher onTick: [NSNumber numberWithFloat: POLLING_MS/1000.0]];
-#if !defined ALTERNATIVE_TASK_SWITCHER and !defined FOCUS_FIRST
+            [workspaceWatcher onTick: [NSNumber numberWithFloat: POLLING_MS/1000.0]];
         }
-#endif
 
         _dock_app = findDockApplication();
         desktopOrigin = findDesktopOrigin();

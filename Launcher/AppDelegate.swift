@@ -37,10 +37,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var window: NSWindow!
 
     @IBOutlet weak var delaySliderLabel: NSTextField!
+    @IBOutlet weak var focusDelaySliderLabel: NSTextField!
     @IBOutlet weak var delaySlider: NSSlider!
+    @IBOutlet weak var focusDelaySlider: NSSlider!
     @IBOutlet weak var enableWarpButton: NSButton!
     @IBOutlet weak var enableCurserScalingButton: NSButton!
-    @IBOutlet weak var enableMouseStopButton: NSButton!
+    @IBOutlet weak var enableAltTaskSwitcherButton: NSButton!
     @IBOutlet weak var enableOnLaunchButton: NSButton!
     @IBOutlet weak var openAtLoginButton: NSButton!
     @IBOutlet weak var shortcutView: MASShortcutView!
@@ -54,7 +56,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 3.4.0, 2022-06-31\n\n" +
+        "Version 3.5.0, 2022-06-31\n\n" +
         "©2022 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
 
@@ -71,9 +73,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var autoRaiseService: Process = Process()
 
     var autoRaiseDelay : NSInteger = 0
+    var autoFocusDelay : NSInteger = 0
     var enableWarp = NSControl.StateValue.off
     var enableCursorScaling = NSControl.StateValue.off
-    var enableMouseStop = NSControl.StateValue.off
+    var enableAltTaskSwitcher = NSControl.StateValue.off
     var enableOnLaunch = NSControl.StateValue.off
     var openAtLogin = NSControl.StateValue.off
 
@@ -140,7 +143,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func autoRaiseDelay(_ sender: Any) {
         autoRaiseDelay = delaySlider.integerValue
         if (autoRaiseDelay == 0) {
-            delaySliderLabel.stringValue = "Window raise disabled (focus only)"
+            delaySliderLabel.stringValue = "Window raise disabled"
         } else {
             delaySliderLabel.stringValue = "Delay window raise for " + String(
                 delayStepMs*(autoRaiseDelay/delayStepMs - 1)) + " ms"
@@ -151,7 +154,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.startService(self)
         }
     }
-
+    
+    @IBAction func autoFocusDelay(_ sender: Any) {
+        autoFocusDelay = focusDelaySlider.integerValue
+        if (autoFocusDelay == 0) {
+            focusDelaySliderLabel.stringValue = "Window focus disabled"
+        } else {
+            focusDelaySliderLabel.stringValue = "Delay window focus for " + String(
+                delayStepMs*(autoFocusDelay/delayStepMs - 1)) + " ms"
+        }
+        self.prefs.set(autoFocusDelay, forKey: "autoFocusDelay")
+        if autoRaiseService.isRunning {
+            self.stopService(self)
+            self.startService(self)
+        }
+    }
+    
     @IBAction func enableWarp(_ sender: NSButton) {
         enableWarp = enableWarpButton.state
         enableCurserScalingButton.isEnabled = (enableWarp == NSControl.StateValue.on)
@@ -171,15 +189,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    @IBAction func enableMouseStop(_ sender: NSButton) {
-        enableMouseStop = enableMouseStopButton.state
-        self.prefs.set(enableMouseStop == NSControl.StateValue.on ? "1" : "0", forKey: "enableMouseStop")
+    
+    @IBAction func enableAltTaskSwitcher(_ sender: NSButton) {
+        enableAltTaskSwitcher = enableAltTaskSwitcherButton.state
+        self.prefs.set(enableAltTaskSwitcher == NSControl.StateValue.on ? "1" : "0", forKey: "enableAltTaskSwitcher")
         if autoRaiseService.isRunning {
             self.stopService(self)
             self.startService(self)
         }
     }
-
+    
     func readPreferences() {
         autoRaiseDelay = prefs.integer(forKey: "autoRaiseDelay")
         if let rawValue = prefs.string(forKey: "enableWarp") {
@@ -188,8 +207,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let rawValue = prefs.string(forKey: "enableCursorScaling") {
             enableCursorScaling = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
-        if let rawValue = prefs.string(forKey: "enableMouseStop") {
-            enableMouseStop = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
+        if let rawValue = prefs.string(forKey: "enableAltTaskSwitcher") {
+            enableAltTaskSwitcher = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
         if let rawValue = prefs.string(forKey: "enableOnLaunch") {
             enableOnLaunch = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
@@ -198,22 +217,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             openAtLogin = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
         if (autoRaiseDelay == 0) {
-            delaySliderLabel.stringValue = "Window raise disabled (focus only)"
+            delaySliderLabel.stringValue = "Window raise disabled"
         } else {
             delaySliderLabel.stringValue = "Delay window raise for " + String(
                 delayStepMs*(autoRaiseDelay/delayStepMs - 1)) + " ms"
+        }
+        if (autoFocusDelay == 0) {
+            focusDelaySliderLabel.stringValue = "Window focus disabled"
+        } else {
+            focusDelaySliderLabel.stringValue = "Delay window focus for " + String(
+                delayStepMs*(autoFocusDelay/delayStepMs - 1)) + " ms"
         }
         enableOnLaunchButton.state = enableOnLaunch
         openAtLoginButton.state = openAtLogin
         enableWarpButton.state = enableWarp
         enableCurserScalingButton.state = enableCursorScaling
-        enableMouseStopButton.state = enableMouseStop
+        enableAltTaskSwitcherButton.state = enableAltTaskSwitcher
         if enableWarp == NSControl.StateValue.on {
             enableCurserScalingButton.isEnabled = true
         } else {
             enableCurserScalingButton.isEnabled = false
         }
         delaySlider.integerValue = autoRaiseDelay
+        focusDelaySlider.integerValue = autoFocusDelay
     }
 
     @IBAction func homePagePressed(_ sender: NSButton) {
@@ -299,6 +325,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if FileManager().fileExists(atPath: autoRaiseCmd!.path) {
                 autoRaiseService.launchPath = autoRaiseCmd?.path
                 autoRaiseService.arguments = ["-delay", String(autoRaiseDelay / delayStepMs)]
+                autoRaiseService.arguments! += ["-focusDelay", String(autoFocusDelay / delayStepMs)]
                 if ( enableWarp == NSControl.StateValue.on ) {
                     autoRaiseService.arguments! += ["-warpX", "0.5", "-warpY", "0.5"]
                     if ( enableCursorScaling == NSControl.StateValue.on ) {
@@ -307,8 +334,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         autoRaiseService.arguments! += ["-scale", "1.0"]
                     }
                 }
-                if ( enableMouseStop == NSControl.StateValue.on ) {
-                    autoRaiseService.arguments! += ["-mouseStop", "true"]
+                if ( enableAltTaskSwitcher == NSControl.StateValue.on ) {
+                    autoRaiseService.arguments! += ["-altTaskSwitcher", "true"]
                 }
             }
             autoRaiseService.launch()
