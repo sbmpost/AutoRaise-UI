@@ -122,6 +122,7 @@ static float warpX = 0.5;
 static float warpY = 0.5;
 static float oldScale = 1;
 static float cursorScale = 2;
+static float mouseDelta = 0;
 static int ignoreTimes = 0;
 static int raiseTimes = 0;
 static int delayTicks = 0;
@@ -635,11 +636,12 @@ const NSString *kScale = @"scale";
 const NSString *kVerbose = @"verbose";
 const NSString *kAltTaskSwitcher = @"altTaskSwitcher";
 const NSString *kIgnoreApps = @"ignoreApps";
+const NSString *kMouseDelta = @"mouseDelta";
 #ifdef FOCUS_FIRST
 const NSString *kFocusDelay = @"focusDelay";
-NSArray *parametersDictionary = @[kDelay, kWarpX, kWarpY, kScale, kVerbose, kAltTaskSwitcher, kFocusDelay, kIgnoreApps];
+NSArray *parametersDictionary = @[kDelay, kWarpX, kWarpY, kScale, kVerbose, kAltTaskSwitcher, kFocusDelay, kIgnoreApps, kMouseDelta];
 #else
-NSArray *parametersDictionary = @[kDelay, kWarpX, kWarpY, kScale, kVerbose, kAltTaskSwitcher, kIgnoreApps];
+NSArray *parametersDictionary = @[kDelay, kWarpX, kWarpY, kScale, kVerbose, kAltTaskSwitcher, kIgnoreApps, kMouseDelta];
 #endif
 NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
 
@@ -742,6 +744,7 @@ NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
 #endif
         parameters[kDelay] = @"1";
     }
+    if ([parameters[kMouseDelta] floatValue] < 0) { parameters[kMouseDelta] = @"0"; }
     if ([parameters[kScale] floatValue] < 1) { parameters[kScale] = @"2.0"; }
     warpMouse =
         parameters[kWarpX] && [parameters[kWarpX] floatValue] >= 0 && [parameters[kWarpX] floatValue] <= 1 &&
@@ -858,8 +861,8 @@ void onTick() {
     float mouse_y_diff = mousePoint.y-oldPoint.y;
     oldPoint = mousePoint;
 
-    bool mouseMoved = fabs(mouse_x_diff) > 0;
-    mouseMoved = mouseMoved || fabs(mouse_y_diff) > 0;
+    bool mouseMoved = fabs(mouse_x_diff) > mouseDelta;
+    mouseMoved = mouseMoved || fabs(mouse_y_diff) > mouseDelta;
 
     // delayCount = 0 -> warp only
 #ifdef FOCUS_FIRST
@@ -947,8 +950,13 @@ void onTick() {
             pid_t mouseWindow_pid;
             if (AXUIElementGetPid(_mouseWindow, &mouseWindow_pid) == kAXErrorSuccess) {
                 bool needs_raise = true;
-
-                if (titleEquals(_mouseWindow, @[NoTitle, BartenderBar])) {
+#ifdef FOCUS_FIRST
+                if (delayCount && raiseDelayCount != 1 && titleEquals(_mouseWindow, @[NoTitle])) {
+                    needs_raise = false;
+                    if (verbose) { NSLog(@"Excluding window"); }
+                } else
+#endif
+                if (titleEquals(_mouseWindow, @[BartenderBar])) {
                     needs_raise = false;
                     if (verbose) { NSLog(@"Excluding window"); }
                 } else {
@@ -982,7 +990,7 @@ void onTick() {
                             _AXUIElementGetWindow(_focusedWindow, &focusedWindow_id);
                             needs_raise = mouseWindow_id != focusedWindow_id;
 #ifdef FOCUS_FIRST
-                            if (delayCount) {
+                            if (delayCount && raiseDelayCount != 1) {
                                 if (needs_raise) {
                                     needs_raise = raiseTimes || mouseWindow_id != lastFocusedWindow_id;
                                 } else { lastFocusedWindow_id = 0; }
@@ -996,9 +1004,8 @@ void onTick() {
                                     if (!error) { _focusedWindow_psn = &focusedWindow_psn; }
                                 }
                             } else {
-#else
-                                needs_raise = needs_raise && !contained_within(_focusedWindow, _mouseWindow);
 #endif
+                            needs_raise = needs_raise && !contained_within(_focusedWindow, _mouseWindow);
 #ifdef FOCUS_FIRST
                             }
 #endif
@@ -1032,7 +1039,7 @@ void onTick() {
                             }
                         } else {
 #endif
-                            raiseAndActivate(_mouseWindow, mouseWindow_pid);
+                        raiseAndActivate(_mouseWindow, mouseWindow_pid);
 #ifdef FOCUS_FIRST
                         }
 #endif
@@ -1090,6 +1097,7 @@ int main(int argc, const char * argv[]) {
         printf("  -warpX <0.5> -warpY <0.5> -scale <2.0>\n");
         printf("  -altTaskSwitcher <true|false>\n");
         printf("  -ignoreApps \"<App1,App2, ...>\"\n");
+        printf("  -mouseDelta <0.1>\n");
         printf("  -verbose <true|false>\n\n");
 
         ConfigClass * config = [[ConfigClass alloc] init];
@@ -1102,6 +1110,7 @@ int main(int argc, const char * argv[]) {
         cursorScale     = [parameters[kScale] floatValue];
         verbose         = [parameters[kVerbose] boolValue];
         altTaskSwitcher = [parameters[kAltTaskSwitcher] boolValue];
+        mouseDelta      = [parameters[kMouseDelta] floatValue];
 
         NSMutableArray * ignore;
         if (parameters[kIgnoreApps]) {
@@ -1130,6 +1139,10 @@ int main(int argc, const char * argv[]) {
         }
         [ignore addObject: AssistiveControl];
         ignoreApps = [ignore copy];
+
+        if (mouseDelta) {
+            printf("  * mouseDelta: %.1f\n", mouseDelta);
+        }
 
         printf("  * verbose: %s\n", verbose ? "true" : "false");
 #if defined OLD_ACTIVATION_METHOD or defined FOCUS_FIRST or defined ALTERNATIVE_TASK_SWITCHER
