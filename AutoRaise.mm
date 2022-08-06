@@ -103,6 +103,7 @@ static bool activated_by_task_switcher = false;
 static AXUIElementRef _accessibility_object = AXUIElementCreateSystemWide();
 static AXUIElementRef _previousFinderWindow = NULL;
 static AXUIElementRef _dock_app = NULL;
+static NSArray * ignoreApps = NULL;
 static const NSString * Dock = @"com.apple.dock";
 static const NSString * Finder = @"com.apple.finder";
 static const NSString * AssistiveControl = @"AssistiveControl";
@@ -121,6 +122,7 @@ static float warpX = 0.5;
 static float warpY = 0.5;
 static float oldScale = 1;
 static float cursorScale = 2;
+static int ignoreTimes = 0;
 static int raiseTimes = 0;
 static int delayTicks = 0;
 static int delayCount = 0;
@@ -632,11 +634,12 @@ const NSString *kWarpY = @"warpY";
 const NSString *kScale = @"scale";
 const NSString *kVerbose = @"verbose";
 const NSString *kAltTaskSwitcher = @"altTaskSwitcher";
+const NSString *kIgnoreApps = @"ignoreApps";
 #ifdef FOCUS_FIRST
 const NSString *kFocusDelay = @"focusDelay";
-NSArray *parametersDictionary = @[kDelay, kWarpX, kWarpY, kScale, kVerbose, kAltTaskSwitcher, kFocusDelay];
+NSArray *parametersDictionary = @[kDelay, kWarpX, kWarpY, kScale, kVerbose, kAltTaskSwitcher, kFocusDelay, kIgnoreApps];
 #else
-NSArray *parametersDictionary = @[kDelay, kWarpX, kWarpY, kScale, kVerbose, kAltTaskSwitcher];
+NSArray *parametersDictionary = @[kDelay, kWarpX, kWarpY, kScale, kVerbose, kAltTaskSwitcher, kIgnoreApps];
 #endif
 NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
 
@@ -749,14 +752,7 @@ NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
 #ifdef FOCUS_FIRST
     if (![parameters[kDelay] intValue] && !parameters[kFocusDelay]) { parameters[kFocusDelay] = @"1"; }
     if (!parameters[kDelay] && ![parameters[kFocusDelay] intValue]) { parameters[kDelay] = @"1"; }
-    if (![parameters[kFocusDelay] intValue] && ![parameters[kDelay] intValue] && !warpMouse) {
-#else
-    if (![parameters[kDelay] intValue] && !warpMouse) {
 #endif
-        parameters[kWarpX] = @"0.5";
-        parameters[kWarpY] = @"0.5";
-        warpMouse = true;
-    }
     return;
 }
 @end // ConfigClass
@@ -810,6 +806,7 @@ bool appActivated() {
         if (_event) { CFRelease(_event); }
 
         bool ignoreActivated = false;
+        // TODO: is the uncorrected mousePoint good enough?
         AXUIElementRef _mouseWindow = get_mousewindow(mousePoint);
         if (_mouseWindow) {
             if (!activated_by_task_switcher) {
@@ -901,7 +898,10 @@ void onTick() {
     }
 #endif
 
-    if (appWasActivated) {
+    if (ignoreTimes) {
+        ignoreTimes--;
+        return;
+    } else if (appWasActivated) {
         appWasActivated = false;
         return;
     } else if (spaceHasChanged) {
@@ -932,7 +932,7 @@ void onTick() {
             CGEventRef _keyDownEvent = CGEventCreateKeyboardEvent(NULL, 0, true);
             CGEventFlags flags = CGEventGetFlags(_keyDownEvent);
             if (_keyDownEvent) { CFRelease(_keyDownEvent); }
-            abort = (flags & kCGEventFlagMaskCommand) == kCGEventFlagMaskCommand;
+            abort = (flags & kCGEventFlagMaskControl) == kCGEventFlagMaskControl;
         }
 
         if (abort) {
@@ -953,7 +953,7 @@ void onTick() {
                     if (verbose) { NSLog(@"Excluding window"); }
                 } else {
                     AXUIElementRef _mouseWindowApp = AXUIElementCreateApplication(mouseWindow_pid);
-                    if (titleEquals(_mouseWindowApp, @[AssistiveControl])) {
+                    if (titleEquals(_mouseWindowApp, ignoreApps)) {
                         needs_raise = false;
                         if (verbose) { NSLog(@"Excluding app"); }
                     }
@@ -1058,8 +1058,13 @@ void onTick() {
 
 CGEventRef eventTapHandler(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *userInfo) {
     static bool commandTabPressed = false;
-    activated_by_task_switcher = activated_by_task_switcher ||
-        (type == kCGEventFlagsChanged && commandTabPressed);
+    if (type == kCGEventFlagsChanged && commandTabPressed) {
+        if (!activated_by_task_switcher) {
+            activated_by_task_switcher = true;
+            ignoreTimes = 3;
+        }
+    }
+
     commandTabPressed = false;
     if (type == kCGEventKeyDown) {
         CGKeyCode keycode = (CGKeyCode) CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
@@ -1084,6 +1089,7 @@ int main(int argc, const char * argv[]) {
 #endif
         printf("  -warpX <0.5> -warpY <0.5> -scale <2.0>\n");
         printf("  -altTaskSwitcher <true|false>\n");
+        printf("  -ignoreApps \"<App1,App2, ...>\"\n");
         printf("  -verbose <true|false>\n\n");
 
         ConfigClass * config = [[ConfigClass alloc] init];
@@ -1097,25 +1103,34 @@ int main(int argc, const char * argv[]) {
         verbose         = [parameters[kVerbose] boolValue];
         altTaskSwitcher = [parameters[kAltTaskSwitcher] boolValue];
 
+        NSMutableArray * ignore;
+        if (parameters[kIgnoreApps]) {
+            ignore = [[NSMutableArray alloc] initWithArray:
+                [parameters[kIgnoreApps] componentsSeparatedByString:@","]];
+        } else { ignore = [[NSMutableArray alloc] init]; }
+
         printf("Started with:\n");
         if (delayCount) {
             printf("  * delay: %dms\n", (delayCount-1)*POLLING_MS);
         }
-#ifndef FOCUS_FIRST
-        else { printf("  * warp only (no-raise)\n"); }
-#else
-        raiseDelayCount = delayCount;
-        delayCount = [parameters[kFocusDelay] intValue];
-        if (!delayCount) {
-            delayCount = raiseDelayCount;
-            if (!delayCount) { printf("  * warp only (no-focus, no-raise)\n"); }
-        } else { printf("  * focusDelay: %dms\n", (delayCount-1)*POLLING_MS); }
+#ifdef FOCUS_FIRST
+        if ([parameters[kFocusDelay] intValue]) {
+            raiseDelayCount = delayCount;
+            delayCount = [parameters[kFocusDelay] intValue];
+            printf("  * focusDelay: %dms\n", (delayCount-1)*POLLING_MS);
+        } else { raiseDelayCount = 1; }
 #endif
-
         if (warpMouse) {
             printf("  * warpX: %.1f, warpY: %.1f, scale: %.1f\n", warpX, warpY, cursorScale);
             printf("  * altTaskSwitcher: %s\n", altTaskSwitcher ? "true" : "false");
         }
+
+        for (id ignoreApp in ignore) {
+            printf("  * ignoreApp: %s\n", [ignoreApp UTF8String]);
+        }
+        [ignore addObject: AssistiveControl];
+        ignoreApps = [ignore copy];
+
         printf("  * verbose: %s\n", verbose ? "true" : "false");
 #if defined OLD_ACTIVATION_METHOD or defined FOCUS_FIRST or defined ALTERNATIVE_TASK_SWITCHER
         printf("\nCompiled with:\n");

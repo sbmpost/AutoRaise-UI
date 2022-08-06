@@ -44,8 +44,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var enableCurserScalingButton: NSButton!
     @IBOutlet weak var enableAltTaskSwitcherButton: NSButton!
     @IBOutlet weak var enableOnLaunchButton: NSButton!
-    @IBOutlet weak var openAtLoginButton: NSButton!
     @IBOutlet weak var shortcutView: MASShortcutView!
+    @IBOutlet weak var ignoreAppsEdit: NSTextField!
 
     // About
     @IBOutlet weak var aboutText: NSTextField!
@@ -56,7 +56,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 3.5.0, 2022-06-31\n\n" +
+        "Version 3.5.1, 2022-08-06\n\n" +
         "©2022 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
 
@@ -78,7 +78,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var enableCursorScaling = NSControl.StateValue.off
     var enableAltTaskSwitcher = NSControl.StateValue.off
     var enableOnLaunch = NSControl.StateValue.off
-    var openAtLogin = NSControl.StateValue.off
+    var ignoreApps: String = ""
 
     let icon = NSImage(named: "MenuIcon")
     let iconRunning = NSImage(named: "MenuIconRunning")
@@ -133,11 +133,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func enableOnLaunch(_ sender: NSButton) {
         enableOnLaunch = enableOnLaunchButton.state
         self.prefs.set(enableOnLaunch == NSControl.StateValue.on ? "1" : "0", forKey: "enableOnLaunch")
-    }
-
-    @IBAction func openAtLogin(_ sender: NSButton) {
-        openAtLogin = openAtLoginButton.state
-        self.prefs.set(openAtLogin == NSControl.StateValue.on ? "1" : "0", forKey: "openAtLogin")
     }
 
     @IBAction func autoRaiseDelay(_ sender: Any) {
@@ -199,8 +194,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
+    @IBAction func ignoreApps(_ sender: Any) {
+        ignoreApps = ignoreAppsEdit.stringValue
+        self.prefs.set(ignoreApps, forKey: "ignoreApps")
+        if autoRaiseService.isRunning {
+            self.stopService(self)
+            self.startService(self)
+        }
+    }
+
     func readPreferences() {
         autoRaiseDelay = prefs.integer(forKey: "autoRaiseDelay")
+        autoFocusDelay = prefs.integer(forKey: "autoFocusDelay")
         if let rawValue = prefs.string(forKey: "enableWarp") {
             enableWarp = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
@@ -213,9 +218,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let rawValue = prefs.string(forKey: "enableOnLaunch") {
             enableOnLaunch = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
-        if let rawValue = prefs.string(forKey: "openAtLogin") {
-            openAtLogin = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
-        }
+        ignoreApps = prefs.string(forKey: "ignoreApps") ?? ""
+
         if (autoRaiseDelay == 0) {
             delaySliderLabel.stringValue = "Window raise disabled"
         } else {
@@ -228,11 +232,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             focusDelaySliderLabel.stringValue = "Delay window focus for " + String(
                 delayStepMs*(autoFocusDelay/delayStepMs - 1)) + " ms"
         }
+
         enableOnLaunchButton.state = enableOnLaunch
-        openAtLoginButton.state = openAtLogin
         enableWarpButton.state = enableWarp
         enableCurserScalingButton.state = enableCursorScaling
         enableAltTaskSwitcherButton.state = enableAltTaskSwitcher
+        ignoreAppsEdit.stringValue = ignoreApps
         if enableWarp == NSControl.StateValue.on {
             enableCurserScalingButton.isEnabled = true
         } else {
@@ -281,6 +286,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // update about tab contents
         aboutText.stringValue = appAbout
+        ignoreAppsEdit.placeholderString = "App1,App2,..."
         // homepage link
         let pstyle = NSMutableParagraphStyle()
         pstyle.alignment = NSTextAlignment.center
@@ -336,6 +342,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 if ( enableAltTaskSwitcher == NSControl.StateValue.on ) {
                     autoRaiseService.arguments! += ["-altTaskSwitcher", "true"]
+                }
+                if ( !ignoreApps.isEmpty ) {
+                    autoRaiseService.arguments! += ["-ignoreApps", ignoreApps]
                 }
             }
             autoRaiseService.launch()
