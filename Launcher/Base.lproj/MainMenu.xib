@@ -722,15 +722,15 @@
                                         <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MCQ-C6-AhO">
                                             <rect key="frame" x="26" y="210" width="437" height="28"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <sliderCell key="cell" state="on" alignment="left" maxValue="11" tickMarkPosition="above" numberOfTickMarks="11" allowsTickMarkValuesOnly="YES" sliderType="linear" id="rzI-6Z-LbJ"/>
+                                            <sliderCell key="cell" state="on" alignment="left" maxValue="10" tickMarkPosition="above" numberOfTickMarks="11" allowsTickMarkValuesOnly="YES" sliderType="linear" id="rzI-6Z-LbJ"/>
                                             <connections>
                                                 <action selector="mouseDelta:" target="Voe-Tx-rLC" id="dUi-gZ-qjQ"/>
                                             </connections>
                                         </slider>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="qkd-Eo-7zs">
-                                            <rect key="frame" x="26" y="293" width="251" height="16"/>
+                                            <rect key="frame" x="26" y="293" width="192" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Delay window focus for 50 ms" id="CQG-dM-ptz">
+                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Delay window focus for 50 ms" id="CQG-dM-ptz">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -743,16 +743,16 @@
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="htH-u0-Iwf">
                                             <rect key="frame" x="26" y="10" width="386" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Note: Disable AutoRaise temporarily by holding the control key " id="iB3-vv-QdX">
+                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Note: Disable AutoRaise temporarily by holding the control key " id="iB3-vv-QdX">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Vpg-yD-SCS">
-                                            <rect key="frame" x="26" y="42" width="233" height="16"/>
+                                            <rect key="frame" x="26" y="42" width="227" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Keyboard shortcut to enable/disable " id="n7U-zS-Q1I">
+                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Keyboard shortcut to enable/disable " id="n7U-zS-Q1I">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -773,25 +773,25 @@
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="rZx-xX-rhV">
                                             <rect key="frame" x="26" y="74" width="202" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Ignore apps (comma separated):" id="n8h-8W-WTP">
+                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Ignore apps (comma separated):" id="n8h-8W-WTP">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="sv0-cx-SO9">
-                                            <rect key="frame" x="26" y="345" width="251" height="16"/>
+                                            <rect key="frame" x="26" y="345" width="186" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Delay window raise for 50 ms" id="oGO-D2-O9I">
+                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Delay window raise for 50 ms" id="oGO-D2-O9I">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="kj7-9y-P3K">
-                                            <rect key="frame" x="26" y="241" width="173" height="16"/>
+                                            <rect key="frame" x="26" y="241" width="179" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Mouse delta: most sensitive" id="DYn-Z4-mJ3">
+                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Mouse delta: most sensitive" id="DYn-Z4-mJ3">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -820,9 +820,9 @@
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" id="Cvm-0Q-cR9">
-                                            <rect key="frame" x="26" y="130" width="201" height="18"/>
+                                            <rect key="frame" x="26" y="130" width="366" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="check" title="Use alternative task switcher" bezelStyle="regularSquare" imagePosition="left" inset="2" id="nST-1O-BWx">
+                                            <buttonCell key="cell" type="check" title="Use alternative task switcher (other than command-tab)" bezelStyle="regularSquare" imagePosition="left" inset="2" id="nST-1O-BWx">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -831,9 +831,9 @@
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" id="uTn-Xu-dZ3">
-                                            <rect key="frame" x="26" y="102" width="194" height="18"/>
+                                            <rect key="frame" x="26" y="102" width="130" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="check" title="Enable AutoRaise on launch" bezelStyle="regularSquare" imagePosition="left" inset="2" id="OgB-hb-QVC">
+                                            <buttonCell key="cell" type="check" title="Enable on launch" bezelStyle="regularSquare" imagePosition="left" inset="2" id="OgB-hb-QVC">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -855,7 +855,7 @@
                                             <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" id="Nuf-Kj-M4U">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">AutoRaise &amp; Launcher
-Version 3.5.2, 2022-08-06
+Version 3.5.3, 2022-08-06
 
  ©2022 Stefan Post, Lothar Haeger
 Icons made by https://www.flaticon.com/authors/fr</string>
