@@ -38,16 +38,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @IBOutlet weak var delaySliderLabel: NSTextField!
     @IBOutlet weak var focusDelaySliderLabel: NSTextField!
-    @IBOutlet weak var mouseDeltaSliderLabel: NSTextField!
     @IBOutlet weak var delaySlider: NSSlider!
     @IBOutlet weak var focusDelaySlider: NSSlider!
-    @IBOutlet weak var mouseDeltaSlider: NSSlider!
     @IBOutlet weak var enableWarpButton: NSButton!
     @IBOutlet weak var enableCurserScalingButton: NSButton!
     @IBOutlet weak var enableAltTaskSwitcherButton: NSButton!
     @IBOutlet weak var enableOnLaunchButton: NSButton!
     @IBOutlet weak var shortcutView: MASShortcutView!
     @IBOutlet weak var ignoreAppsEdit: NSTextField!
+    @IBOutlet weak var ignoreSpaceChangedButton: NSButton!
+    @IBOutlet weak var mouseDeltaEdit: NSTextField!
+    @IBOutlet weak var pollMillisEdit: NSTextField!
 
     // About
     @IBOutlet weak var aboutText: NSTextField!
@@ -58,7 +59,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 3.5.3, 2022-08-06\n\n" +
+        "Version 3.6.0, 2022-09-18\n\n" +
         "©2022 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
 
@@ -77,15 +78,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var autoRaiseDelay : NSInteger = 0
     var autoFocusDelay : NSInteger = 0
     var mouseDelta : NSInteger = 0
+    var pollMillis : NSInteger = 0
     var enableWarp = NSControl.StateValue.off
     var enableCursorScaling = NSControl.StateValue.off
     var enableAltTaskSwitcher = NSControl.StateValue.off
     var enableOnLaunch = NSControl.StateValue.off
+    var ignoreSpaceChanged = NSControl.StateValue.off
     var ignoreApps: String = ""
 
     let icon = NSImage(named: "MenuIcon")
     let iconRunning = NSImage(named: "MenuIconRunning")
-    let delayStepMs = 50
 
     override func awakeFromNib() {
         // Build status bar menu
@@ -144,7 +146,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             delaySliderLabel.stringValue = "Window raise disabled"
         } else {
             delaySliderLabel.stringValue = "Delay window raise for " + String(
-                delayStepMs*(autoRaiseDelay/delayStepMs - 1)) + " ms"
+                pollMillis*(autoRaiseDelay/pollMillis - 1)) + " ms"
         }
         self.prefs.set(autoRaiseDelay, forKey: "autoRaiseDelay")
         if autoRaiseService.isRunning {
@@ -159,7 +161,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             focusDelaySliderLabel.stringValue = "Window focus disabled"
         } else {
             focusDelaySliderLabel.stringValue = "Delay window focus for " + String(
-                delayStepMs*(autoFocusDelay/delayStepMs - 1)) + " ms"
+                pollMillis*(autoFocusDelay/pollMillis - 1)) + " ms"
         }
         self.prefs.set(autoFocusDelay, forKey: "autoFocusDelay")
         if autoRaiseService.isRunning {
@@ -169,11 +171,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @IBAction func mouseDelta(_ sender: Any) {
-        mouseDelta = mouseDeltaSlider.integerValue
-        if (mouseDelta == 0) {
-            mouseDeltaSliderLabel.stringValue = "Mouse delta: most sensitive"
-        } else {
-            mouseDeltaSliderLabel.stringValue = "Mouse delta: " + String(mouseDelta)
+        mouseDelta = mouseDeltaEdit.integerValue
+        if (mouseDelta < 0) {
+            mouseDeltaEdit.integerValue = 0
+            mouseDelta = mouseDeltaEdit.integerValue
         }
         self.prefs.set(mouseDelta, forKey: "mouseDelta")
         if autoRaiseService.isRunning {
@@ -185,6 +186,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func enableWarp(_ sender: NSButton) {
         enableWarp = enableWarpButton.state
         enableCurserScalingButton.isEnabled = (enableWarp == NSControl.StateValue.on)
+        enableAltTaskSwitcherButton.isEnabled = (enableWarp == NSControl.StateValue.on)
         self.prefs.set(enableWarp == NSControl.StateValue.on ? "1" : "0", forKey: "enableWarp")
         if autoRaiseService.isRunning {
             self.stopService(self)
@@ -220,10 +222,45 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    @IBAction func ignoreSpaceChanged(_ sender: Any) {
+        ignoreSpaceChanged = ignoreSpaceChangedButton.state
+        self.prefs.set(ignoreSpaceChanged == NSControl.StateValue.on ? "1" : "0",
+            forKey: "ignoreSpaceChanged")
+        if autoRaiseService.isRunning {
+            self.stopService(self)
+            self.startService(self)
+        }
+    }
+
+    @IBAction func pollMillis(_ sender: Any) {
+        let oldPollMillis = pollMillis
+        pollMillis = pollMillisEdit.integerValue
+        if (pollMillis < 20) {
+            pollMillisEdit.integerValue = 50
+            pollMillis = pollMillisEdit.integerValue
+        }
+        self.prefs.set(pollMillis, forKey: "pollMillis")
+
+        delaySlider.maxValue = Double((delaySlider.numberOfTickMarks - 1) * pollMillis)
+        focusDelaySlider.maxValue = Double((focusDelaySlider.numberOfTickMarks - 1) * pollMillis)
+        delaySlider.integerValue = pollMillis * autoRaiseDelay/oldPollMillis
+        focusDelaySlider.integerValue = pollMillis * autoFocusDelay/oldPollMillis
+
+        autoRaiseDelay(sender)
+        autoFocusDelay(sender)
+        if autoRaiseService.isRunning {
+            self.stopService(self)
+            self.startService(self)
+        }
+    }
+
     func readPreferences() {
         autoRaiseDelay = prefs.integer(forKey: "autoRaiseDelay")
         autoFocusDelay = prefs.integer(forKey: "autoFocusDelay")
         mouseDelta = prefs.integer(forKey: "mouseDelta")
+        if (mouseDelta < 0) { mouseDelta = 0 }
+        pollMillis = prefs.integer(forKey: "pollMillis")
+        if (pollMillis < 20) { pollMillis = 50 }
         if let rawValue = prefs.string(forKey: "enableWarp") {
             enableWarp = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
@@ -236,24 +273,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let rawValue = prefs.string(forKey: "enableOnLaunch") {
             enableOnLaunch = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
+        if let rawValue = prefs.string(forKey: "ignoreSpaceChanged") {
+            ignoreSpaceChanged = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
+        }
         ignoreApps = prefs.string(forKey: "ignoreApps") ?? ""
+
+        delaySlider.maxValue = Double(delaySlider.numberOfTickMarks * pollMillis)
+        focusDelaySlider.maxValue = Double(focusDelaySlider.numberOfTickMarks * pollMillis)
+        if (autoRaiseDelay == 0 && autoFocusDelay == 0 && enableWarp == NSControl.StateValue.off) {
+            delaySlider.integerValue = pollMillis
+            autoRaiseDelay(self)
+        }
 
         if (autoRaiseDelay == 0) {
             delaySliderLabel.stringValue = "Window raise disabled"
         } else {
             delaySliderLabel.stringValue = "Delay window raise for " + String(
-                delayStepMs*(autoRaiseDelay/delayStepMs - 1)) + " ms"
+                pollMillis*(autoRaiseDelay/pollMillis - 1)) + " ms"
         }
         if (autoFocusDelay == 0) {
             focusDelaySliderLabel.stringValue = "Window focus disabled"
         } else {
             focusDelaySliderLabel.stringValue = "Delay window focus for " + String(
-                delayStepMs*(autoFocusDelay/delayStepMs - 1)) + " ms"
-        }
-        if (mouseDelta == 0) {
-            mouseDeltaSliderLabel.stringValue = "Mouse delta: most sensitive"
-        } else {
-            mouseDeltaSliderLabel.stringValue = "Mouse delta: " + String(mouseDelta)
+                pollMillis*(autoFocusDelay/pollMillis - 1)) + " ms"
         }
 
         enableOnLaunchButton.state = enableOnLaunch
@@ -261,14 +303,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         enableCurserScalingButton.state = enableCursorScaling
         enableAltTaskSwitcherButton.state = enableAltTaskSwitcher
         ignoreAppsEdit.stringValue = ignoreApps
+        ignoreSpaceChangedButton.state = ignoreSpaceChanged
         if enableWarp == NSControl.StateValue.on {
             enableCurserScalingButton.isEnabled = true
+            enableAltTaskSwitcherButton.isEnabled = true
         } else {
             enableCurserScalingButton.isEnabled = false
+            enableAltTaskSwitcherButton.isEnabled = false
         }
         delaySlider.integerValue = autoRaiseDelay
         focusDelaySlider.integerValue = autoFocusDelay
-        mouseDeltaSlider.integerValue = mouseDelta
+        pollMillisEdit.integerValue = pollMillis
+        mouseDeltaEdit.integerValue = mouseDelta
     }
 
     @IBAction func homePagePressed(_ sender: NSButton) {
@@ -310,7 +356,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // update about tab contents
         aboutText.stringValue = appAbout
-        ignoreAppsEdit.placeholderString = "App1,App2,..."
+        ignoreAppsEdit.placeholderString = "App1,App2,... (confirm with enter)"
         // homepage link
         let pstyle = NSMutableParagraphStyle()
         pstyle.alignment = NSTextAlignment.center
@@ -354,9 +400,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let autoRaiseCmd = Bundle.main.url(forResource: "AutoRaise", withExtension: "")
             if FileManager().fileExists(atPath: autoRaiseCmd!.path) {
                 autoRaiseService.launchPath = autoRaiseCmd?.path
-                autoRaiseService.arguments = ["-delay", String(autoRaiseDelay / delayStepMs)]
-                autoRaiseService.arguments! += ["-focusDelay", String(autoFocusDelay / delayStepMs)]
+                autoRaiseService.arguments = ["-delay", String(autoRaiseDelay / pollMillis)]
+                autoRaiseService.arguments! += ["-focusDelay", String(autoFocusDelay / pollMillis)]
                 autoRaiseService.arguments! += ["-mouseDelta", String(mouseDelta)]
+                autoRaiseService.arguments! += ["-pollMillis", String(pollMillis)]
                 if ( enableWarp == NSControl.StateValue.on ) {
                     autoRaiseService.arguments! += ["-warpX", "0.5", "-warpY", "0.5"]
                     if ( enableCursorScaling == NSControl.StateValue.on ) {
@@ -370,6 +417,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 if ( !ignoreApps.isEmpty ) {
                     autoRaiseService.arguments! += ["-ignoreApps", ignoreApps]
+                }
+                if ( ignoreSpaceChanged == NSControl.StateValue.on ) {
+                    autoRaiseService.arguments! += ["-ignoreSpaceChanged", "true"]
                 }
             }
             autoRaiseService.launch()
