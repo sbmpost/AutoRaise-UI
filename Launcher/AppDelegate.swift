@@ -46,6 +46,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var enableOnLaunchButton: NSButton!
     @IBOutlet weak var shortcutView: MASShortcutView!
     @IBOutlet weak var ignoreAppsEdit: NSTextField!
+    @IBOutlet weak var stayFocusedBundleIdsEdit: NSTextFieldCell!
+    @IBOutlet weak var disableKeyBox: NSComboBox!
     @IBOutlet weak var ignoreSpaceChangedButton: NSButton!
     @IBOutlet weak var mouseDeltaEdit: NSTextField!
     @IBOutlet weak var pollMillisEdit: NSTextField!
@@ -59,8 +61,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 3.6.0, 2022-09-18\n\n" +
-        "©2022 Stefan Post, Lothar Haeger\n" +
+        "Version 3.7.0, 2023-03-03\n\n" +
+        "©2023 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
 
     let homePageUrl = "https://github.com/lhaeger/AutoRaise"
@@ -85,6 +87,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var enableOnLaunch = NSControl.StateValue.off
     var ignoreSpaceChanged = NSControl.StateValue.off
     var ignoreApps: String = ""
+    var stayFocusedBundleIds: String = ""
+    var disableKey: String = "control"
 
     let icon = NSImage(named: "MenuIcon")
     let iconRunning = NSImage(named: "MenuIconRunning")
@@ -222,6 +226,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    @IBAction func stayFocusedBundleIds(_ sender: Any) {
+        stayFocusedBundleIds = stayFocusedBundleIdsEdit.stringValue
+        self.prefs.set(stayFocusedBundleIds, forKey: "stayFocusedBundleIds")
+        if autoRaiseService.isRunning {
+            self.stopService(self)
+            self.startService(self)
+        }
+    }
+
+    @IBAction func disableKey(_ sender: Any) {
+        disableKey = disableKeyBox.stringValue
+        self.prefs.set(disableKey, forKey: "disableKey")
+        if autoRaiseService.isRunning {
+            self.stopService(self)
+            self.startService(self)
+        }
+    }
+
     @IBAction func ignoreSpaceChanged(_ sender: Any) {
         ignoreSpaceChanged = ignoreSpaceChangedButton.state
         self.prefs.set(ignoreSpaceChanged == NSControl.StateValue.on ? "1" : "0",
@@ -277,6 +299,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             ignoreSpaceChanged = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
         ignoreApps = prefs.string(forKey: "ignoreApps") ?? ""
+        stayFocusedBundleIds = prefs.string(forKey: "stayFocusedBundleIds") ?? ""
+        disableKey = prefs.string(forKey: "disableKey") ?? "control"
 
         delaySlider.maxValue = Double(delaySlider.numberOfTickMarks * pollMillis)
         focusDelaySlider.maxValue = Double(focusDelaySlider.numberOfTickMarks * pollMillis)
@@ -303,6 +327,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         enableCurserScalingButton.state = enableCursorScaling
         enableAltTaskSwitcherButton.state = enableAltTaskSwitcher
         ignoreAppsEdit.stringValue = ignoreApps
+        stayFocusedBundleIdsEdit.stringValue = stayFocusedBundleIds
+        disableKeyBox.stringValue = disableKey
         ignoreSpaceChangedButton.state = ignoreSpaceChanged
         if enableWarp == NSControl.StateValue.on {
             enableCurserScalingButton.isEnabled = true
@@ -417,6 +443,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 if ( !ignoreApps.isEmpty ) {
                     autoRaiseService.arguments! += ["-ignoreApps", ignoreApps]
+                }
+                if ( !stayFocusedBundleIds.isEmpty ) {
+                    autoRaiseService.arguments! += ["-stayFocusedBundleIds", stayFocusedBundleIds]
+                }
+                if ( !disableKey.isEmpty ) {
+                    autoRaiseService.arguments! += ["-disableKey", disableKey]
                 }
                 if ( ignoreSpaceChanged == NSControl.StateValue.on ) {
                     autoRaiseService.arguments! += ["-ignoreSpaceChanged", "true"]
