@@ -528,7 +528,6 @@ inline bool main_window(AXUIElementRef _window) {
         CFRelease(_result);
     }
 
-    main_window = main_window && !titleEquals(_window, @[NoTitle]);
     if (verbose && !main_window) { NSLog(@"Not a main window"); }
     return main_window;
 }
