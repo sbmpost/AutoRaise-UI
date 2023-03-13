@@ -356,6 +356,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(CGWindowLevelKey.floatingWindow)))
 
+        icon?.isTemplate = true
+        iconRunning?.isTemplate = true
         menuBarItem.button?.image = icon
 
         readPreferences()
@@ -386,16 +388,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // homepage link
         let pstyle = NSMutableParagraphStyle()
         pstyle.alignment = NSTextAlignment.center
+        let customColor = NSColor(red: 0.5, green: 0.5, blue: 0.9, alpha: 1.0)
         homePage.attributedTitle = NSAttributedString(
             string: homePageUrl,
             attributes: [ NSAttributedString.Key.font: NSFont.systemFont(ofSize: 13.0),
-                          NSAttributedString.Key.foregroundColor: NSColor.blue,
+                          NSAttributedString.Key.foregroundColor: customColor,
                           NSAttributedString.Key.underlineStyle: 1,
                           NSAttributedString.Key.paragraphStyle: pstyle])
         autoRaisePage.attributedTitle = NSAttributedString(
             string: autoRaiseUrl,
             attributes: [ NSAttributedString.Key.font: NSFont.systemFont(ofSize: 13.0),
-                          NSAttributedString.Key.foregroundColor: NSColor.blue,
+                          NSAttributedString.Key.foregroundColor: customColor,
                           NSAttributedString.Key.underlineStyle: 1,
                           NSAttributedString.Key.paragraphStyle: pstyle])
     }
