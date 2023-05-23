@@ -2,7 +2,7 @@
  *
  * AutoRaise Launcher
  *
- * Copyright (c) 2022 Lothar Haeger, Stefan Post (sbmpost)
+ * Copyright (c) 2023 Stefan Post (sbmpost), Lothar Haeger
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 3.8.1, 2023-05-23\n\n" +
+        "Version 3.8.2, 2023-05-23\n\n" +
         "©2023 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
 
