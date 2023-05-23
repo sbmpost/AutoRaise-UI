@@ -234,7 +234,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "g++ -O2 -Wall -fobjc-arc -D\"NS_FORMAT_ARGUMENT(A)=\" -DSKYLIGHT_AVAILABLE=1 -DEXPERIMENTAL_FOCUS_FIRST -DOLD_ACTIVATION_METHOD -o x86_app AutoRaise.mm -framework AppKit -F /System/Library/PrivateFrameworks -framework SkyLight -target x86_64-apple-macos10.15\ng++ -O2 -Wall -fobjc-arc -D\"NS_FORMAT_ARGUMENT(A)=\" -DSKYLIGHT_AVAILABLE=1 -DEXPERIMENTAL_FOCUS_FIRST -DOLD_ACTIVATION_METHOD -o arm_app AutoRaise.mm -framework AppKit -F /System/Library/PrivateFrameworks -framework SkyLight -target arm64-apple-macos10.15\nlipo -create -output AutoRaise x86_app arm_app\n";
+			shellScript = "g++ -O2 -Wall -fobjc-arc -D\"NS_FORMAT_ARGUMENT(A)=\" -D\"SKYLIGHT_AVAILABLE=1\" -DEXPERIMENTAL_FOCUS_FIRST -DOLD_ACTIVATION_METHOD -o x86_app AutoRaise.mm -framework AppKit -F /System/Library/PrivateFrameworks -framework SkyLight -target x86_64-apple-macos12.00\ng++ -O2 -Wall -fobjc-arc -D\"NS_FORMAT_ARGUMENT(A)=\" -D\"SKYLIGHT_AVAILABLE=1\" -DEXPERIMENTAL_FOCUS_FIRST -DOLD_ACTIVATION_METHOD -o arm_app AutoRaise.mm -framework AppKit -F /System/Library/PrivateFrameworks -framework SkyLight -target arm64-apple-macos12.00\nlipo -create -output AutoRaise x86_app arm_app\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -312,7 +312,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -366,7 +366,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
