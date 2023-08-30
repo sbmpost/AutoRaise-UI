@@ -1005,7 +1005,7 @@
                                             <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" id="Nuf-Kj-M4U">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">AutoRaise &amp; Launcher
-Version 3.9.0, 2023-06-01
+Version 4.0.0, 2023-08-30
 
  ©2023 Stefan Post, Lothar Haeger
 Icons made by https://www.flaticon.com/authors/fr</string>
