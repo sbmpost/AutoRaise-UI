@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="22154" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22154"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -26,6 +26,7 @@
                 <outlet property="enableWarpButton" destination="BQn-Wh-SrZ" id="Tll-pG-Jm9"/>
                 <outlet property="focusDelaySlider" destination="Xxh-XB-TLu" id="jay-FH-RQ0"/>
                 <outlet property="focusDelaySliderLabel" destination="qkd-Eo-7zs" id="HeF-UA-Y6H"/>
+                <outlet property="hideIconButton" destination="KvV-Ak-KWn" id="Swz-zc-vL3"/>
                 <outlet property="homePage" destination="Uxy-EO-1u0" id="okw-cw-SmL"/>
                 <outlet property="ignoreAppsEdit" destination="fR7-Pv-7jn" id="ue8-Gb-Q3X"/>
                 <outlet property="ignoreSpaceChangedButton" destination="k6k-p3-eRn" id="bsT-rk-PLO"/>
@@ -691,7 +692,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="546" height="638"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1344" height="815"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1152" height="695"/>
             <view key="contentView" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="546" height="638"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -891,6 +892,17 @@
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
+                                                    <button verticalHuggingPriority="750" id="KvV-Ak-KWn">
+                                                        <rect key="frame" x="164" y="126" width="224" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <buttonCell key="cell" type="check" title="Hide menubar icon (until restart)" bezelStyle="regularSquare" imagePosition="left" inset="2" id="nRJ-K1-IHp">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="hideIcon:" target="Voe-Tx-rLC" id="zyc-Bf-SwI"/>
+                                                        </connections>
+                                                    </button>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="fR7-Pv-7jn" firstAttribute="baseline" secondItem="rZx-xX-rhV" secondAttribute="baseline" id="1Yc-Ga-wV1"/>
@@ -1005,7 +1017,7 @@
                                             <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" id="Nuf-Kj-M4U">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">AutoRaise &amp; Launcher
-Version 4.0.2, 2023-09-01
+Version 4.0.3, 2023-09-05
 
  ©2023 Stefan Post, Lothar Haeger
 Icons made by https://www.flaticon.com/authors/fr</string>

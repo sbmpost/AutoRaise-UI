@@ -44,6 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var enableCurserScalingButton: NSButton!
     @IBOutlet weak var enableAltTaskSwitcherButton: NSButton!
     @IBOutlet weak var enableOnLaunchButton: NSButton!
+    @IBOutlet weak var hideIconButton: NSButton!
     @IBOutlet weak var shortcutView: MASShortcutView!
     @IBOutlet weak var ignoreAppsEdit: NSTextField!
     @IBOutlet weak var stayFocusedBundleIdsEdit: NSTextFieldCell!
@@ -61,7 +62,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 4.0.2, 2023-09-01\n\n" +
+        "Version 4.0.3, 2023-09-05\n\n" +
         "©2023 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
 
@@ -85,6 +86,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var enableCursorScaling = NSControl.StateValue.off
     var enableAltTaskSwitcher = NSControl.StateValue.off
     var enableOnLaunch = NSControl.StateValue.off
+    var hideIcon = NSControl.StateValue.off
     var ignoreSpaceChanged = NSControl.StateValue.off
     var ignoreApps: String = ""
     var stayFocusedBundleIds: String = ""
@@ -142,6 +144,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func enableOnLaunch(_ sender: NSButton) {
         enableOnLaunch = enableOnLaunchButton.state
         self.prefs.set(enableOnLaunch == NSControl.StateValue.on ? "1" : "0", forKey: "enableOnLaunch")
+    }
+
+    @IBAction func hideIcon(_ sender: NSButton) {
+        menuBarItem.isVisible = hideIconButton.state == NSControl.StateValue.off
     }
 
     @IBAction func autoRaiseDelay(_ sender: Any) {
@@ -359,6 +365,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         icon?.isTemplate = true
         iconRunning?.isTemplate = true
         menuBarItem.button?.image = icon
+        menuBarItem.isVisible = true
 
         readPreferences()
 
@@ -366,20 +373,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         shortcutView.associatedUserDefaultsKey = "HotKey"
 
         shortcutView.shortcutValueChange = { (sender) in
-                MASShortcutMonitor.shared()?.unregisterAllShortcuts()
-                if shortcut != nil {
-                    MASShortcutMonitor.shared().register(shortcut, withAction:{
-                        self.toggleService()
-                    })
-                }
+            MASShortcutMonitor.shared()?.unregisterAllShortcuts()
+            if shortcut != nil {
+                MASShortcutMonitor.shared().register(shortcut, withAction:{
+                    self.toggleService()
+                })
+            }
         }
 
         if self.shortcutView.shortcutValue != nil {
             MASShortcutMonitor.shared().register(self.shortcutView.shortcutValue, withAction: toggleService)
-        }
-
-        if enableOnLaunch == NSControl.StateValue.on {
-            self.startService(self)
         }
 
         // update about tab contents
@@ -401,6 +404,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                           NSAttributedString.Key.foregroundColor: customColor,
                           NSAttributedString.Key.underlineStyle: 1,
                           NSAttributedString.Key.paragraphStyle: pstyle])
+
+        let instances = NSWorkspace.shared.runningApplications.filter {
+            $0.localizedName == "AutoRaise" && $0 != NSRunningApplication.current
+        }
+
+        if (instances.count == 0) {
+            if enableOnLaunch == NSControl.StateValue.on {
+                startService(self)
+            }
+        } else {
+            window.makeKeyAndOrderFront(self)
+            stopAutoRaiseMessage()
+        }
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -408,15 +424,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         MASShortcutMonitor.shared().unregisterAllShortcuts()
     }
 
-    func messageBox(_ message: String, description: String?=nil) -> Bool {
-        let myPopup: NSAlert = NSAlert()
-        myPopup.alertStyle = NSAlert.Style.critical
-        myPopup.addButton(withTitle: "OK")
-        myPopup.messageText = message
-        if let informativeText = description {
-            myPopup.informativeText = informativeText
+    func applicationDidBecomeActive(_ aNotification: Notification) {
+        if (menuBarItem.isVisible == false) {
+            menuBarItem.isVisible = true
+            hideIconButton.state = NSControl.StateValue.off
         }
-        return (myPopup.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn)
+    }
+
+    func stopAutoRaiseMessage() {
+        let alert = NSAlert()
+        alert.messageText = "Another AutoRaise instance is already running"
+        alert.informativeText = "Please stop the other instance first"
+        alert.addButton(withTitle: "Exit")
+        alert.beginSheetModal(for: window, completionHandler: savingHandler)
+    }
+
+    func savingHandler(response: NSApplication.ModalResponse) {
+        switch(response) {
+            case NSApplication.ModalResponse.alertFirstButtonReturn:
+                NSRunningApplication.current.terminate()
+            break
+            default:
+                NSRunningApplication.current.terminate()
+            break
+        }
     }
 
     @objc func Preferences(_ sender: AnyObject){
