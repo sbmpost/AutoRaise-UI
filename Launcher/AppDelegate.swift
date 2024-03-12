@@ -2,7 +2,7 @@
  *
  * AutoRaise Launcher
  *
- * Copyright (c) 2023 Stefan Post (sbmpost), Lothar Haeger
+ * Copyright (c) 2024 Stefan Post (sbmpost), Lothar Haeger
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var stayFocusedBundleIdsEdit: NSTextFieldCell!
     @IBOutlet weak var disableKeyBox: NSComboBox!
     @IBOutlet weak var ignoreSpaceChangedButton: NSButton!
+    @IBOutlet weak var invertIgnoreAppsButton: NSButton!
     @IBOutlet weak var mouseDeltaEdit: NSTextField!
     @IBOutlet weak var pollMillisEdit: NSTextField!
 
@@ -62,8 +63,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 4.7.0, 2023-11-09\n\n" +
-        "©2023 Stefan Post, Lothar Haeger\n" +
+        "Version 4.8.0, 2024-03-12\n\n" +
+        "©2024 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
 
     let homePageUrl = "https://github.com/lhaeger/AutoRaise"
@@ -88,6 +89,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var enableOnLaunch = NSControl.StateValue.off
     var hideIcon = NSControl.StateValue.off
     var ignoreSpaceChanged = NSControl.StateValue.off
+    var invertIgnoreApps = NSControl.StateValue.off
     var ignoreApps: String = ""
     var stayFocusedBundleIds: String = ""
     var disableKey: String = "control"
@@ -260,6 +262,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    @IBAction func invertIgnoreApps(_ sender: Any) {
+        invertIgnoreApps = invertIgnoreAppsButton.state
+        self.prefs.set(invertIgnoreApps == NSControl.StateValue.on ? "1" : "0",
+            forKey: "invertIgnoreApps")
+        if autoRaiseService.isRunning {
+            self.stopService(self)
+            self.startService(self)
+        }
+    }
+
     @IBAction func pollMillis(_ sender: Any) {
         let oldPollMillis = pollMillis
         pollMillis = pollMillisEdit.integerValue
@@ -304,6 +316,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let rawValue = prefs.string(forKey: "ignoreSpaceChanged") {
             ignoreSpaceChanged = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
+        if let rawValue = prefs.string(forKey: "invertIgnoreApps") {
+            invertIgnoreApps = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
+        }
         ignoreApps = prefs.string(forKey: "ignoreApps") ?? ""
         stayFocusedBundleIds = prefs.string(forKey: "stayFocusedBundleIds") ?? ""
         disableKey = prefs.string(forKey: "disableKey") ?? "control"
@@ -336,6 +351,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         stayFocusedBundleIdsEdit.stringValue = stayFocusedBundleIds
         disableKeyBox.stringValue = disableKey
         ignoreSpaceChangedButton.state = ignoreSpaceChanged
+        invertIgnoreAppsButton.state = invertIgnoreApps
         if enableWarp == NSControl.StateValue.on {
             enableCurserScalingButton.isEnabled = true
             enableAltTaskSwitcherButton.isEnabled = true
@@ -425,7 +441,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ aNotification: Notification) {
-        if (menuBarItem.isVisible == false) {
+        if (menuBarItem.isVisible == false && window.isVisible == false) {
             menuBarItem.isVisible = true
             hideIconButton.state = NSControl.StateValue.off
         }
@@ -486,6 +502,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 if ( ignoreSpaceChanged == NSControl.StateValue.on ) {
                     autoRaiseService.arguments! += ["-ignoreSpaceChanged", "true"]
+                }
+                if ( invertIgnoreApps == NSControl.StateValue.on ) {
+                    autoRaiseService.arguments! += ["-invertIgnoreApps", "true"]
                 }
             }
             autoRaiseService.launch()
