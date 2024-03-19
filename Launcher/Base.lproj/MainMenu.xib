@@ -893,9 +893,6 @@
                                                             </connections>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <customView identifier="shortcutKeyView" translatesAutoresizingMaskIntoConstraints="NO" id="031-xd-XPj" customClass="MASShortcutView">
-                                                        <rect key="frame" x="244" y="10" width="133" height="26"/>
-                                                    </customView>
                                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Vpg-yD-SCS">
                                                         <rect key="frame" x="10" y="14" width="231" height="16"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -916,20 +913,23 @@
                                                             </connections>
                                                         </buttonCell>
                                                     </button>
+                                                    <customView identifier="shortcutKeyView" translatesAutoresizingMaskIntoConstraints="NO" id="031-xd-XPj" customClass="MASShortcutView">
+                                                        <rect key="frame" x="244" y="4" width="133" height="32"/>
+                                                    </customView>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="w3p-JS-4li" firstAttribute="leading" secondItem="2ZZ-ME-HXj" secondAttribute="trailing" constant="3" id="6ZC-IA-cmY"/>
+                                                    <constraint firstItem="031-xd-XPj" firstAttribute="top" secondItem="w3p-JS-4li" secondAttribute="bottom" constant="8" symbolic="YES" id="8mm-Z7-C9Q"/>
                                                     <constraint firstItem="fR7-Pv-7jn" firstAttribute="baseline" secondItem="ZhS-b0-AnP" secondAttribute="baseline" id="9dx-OW-jkH"/>
                                                     <constraint firstItem="w3p-JS-4li" firstAttribute="baseline" secondItem="2ZZ-ME-HXj" secondAttribute="baseline" id="BbZ-7B-aeW"/>
                                                     <constraint firstItem="fR7-Pv-7jn" firstAttribute="centerX" secondItem="rLm-SG-aUR" secondAttribute="centerX" id="Fd3-0f-fLw"/>
-                                                    <constraint firstItem="031-xd-XPj" firstAttribute="leading" secondItem="w3p-JS-4li" secondAttribute="leading" id="HG2-Mr-HhL"/>
                                                     <constraint firstItem="fR7-Pv-7jn" firstAttribute="leading" secondItem="rZx-xX-rhV" secondAttribute="trailing" constant="6" id="IIc-bq-06l"/>
+                                                    <constraint firstAttribute="bottom" secondItem="031-xd-XPj" secondAttribute="bottom" constant="4" id="MuE-3V-x1Z"/>
                                                     <constraint firstItem="JZU-fn-XWG" firstAttribute="baseline" secondItem="WFM-eN-dmD" secondAttribute="baseline" id="ONl-cL-pGg"/>
                                                     <constraint firstItem="JZU-fn-XWG" firstAttribute="leading" secondItem="WFM-eN-dmD" secondAttribute="trailing" constant="6" id="Pg1-A1-aqL"/>
-                                                    <constraint firstItem="031-xd-XPj" firstAttribute="top" secondItem="w3p-JS-4li" secondAttribute="bottom" constant="8" symbolic="YES" id="RRo-fN-8an"/>
-                                                    <constraint firstAttribute="bottom" secondItem="031-xd-XPj" secondAttribute="bottom" constant="10" id="kkB-aC-YNu"/>
+                                                    <constraint firstItem="031-xd-XPj" firstAttribute="leading" secondItem="w3p-JS-4li" secondAttribute="leading" id="bWX-OG-3nt"/>
+                                                    <constraint firstAttribute="trailing" secondItem="031-xd-XPj" secondAttribute="trailing" constant="83" id="lqa-6p-aoT"/>
                                                     <constraint firstItem="w3p-JS-4li" firstAttribute="centerX" secondItem="KvV-Ak-KWn" secondAttribute="centerX" id="mXm-vz-WOO"/>
-                                                    <constraint firstItem="031-xd-XPj" firstAttribute="centerX" secondItem="JZU-fn-XWG" secondAttribute="centerX" constant="6.5" id="pkU-eR-8Xq"/>
                                                     <constraint firstAttribute="trailing" secondItem="JZU-fn-XWG" secondAttribute="trailing" constant="20" id="uwZ-I7-k79"/>
                                                 </constraints>
                                             </view>
@@ -1047,7 +1047,7 @@
                                             <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" id="Nuf-Kj-M4U">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">AutoRaise &amp; Launcher
-Version 4.8.0, 2024-03-12
+Version 4.8.1, 2024-03-19
 
  ©2024 Stefan Post, Lothar Haeger
 Icons made by https://www.flaticon.com/authors/fr</string>
