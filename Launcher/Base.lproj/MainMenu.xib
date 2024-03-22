@@ -693,7 +693,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="546" height="644"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1152" height="695"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1344" height="815"/>
             <view key="contentView" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="546" height="644"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -894,9 +894,9 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Vpg-yD-SCS">
-                                                        <rect key="frame" x="10" y="14" width="231" height="16"/>
+                                                        <rect key="frame" x="10" y="14" width="338" height="16"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Keyboard shortcut to enable/disable: " id="n7U-zS-Q1I">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Keyboard shortcut to enable/disable (restart required): " id="n7U-zS-Q1I">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -914,23 +914,23 @@
                                                         </buttonCell>
                                                     </button>
                                                     <customView identifier="shortcutKeyView" translatesAutoresizingMaskIntoConstraints="NO" id="031-xd-XPj" customClass="MASShortcutView">
-                                                        <rect key="frame" x="244" y="4" width="133" height="32"/>
+                                                        <rect key="frame" x="350" y="4" width="90" height="32"/>
                                                     </customView>
                                                 </subviews>
                                                 <constraints>
+                                                    <constraint firstItem="031-xd-XPj" firstAttribute="leading" secondItem="Vpg-yD-SCS" secondAttribute="trailing" constant="4" id="1bt-4k-3U1"/>
                                                     <constraint firstItem="w3p-JS-4li" firstAttribute="leading" secondItem="2ZZ-ME-HXj" secondAttribute="trailing" constant="3" id="6ZC-IA-cmY"/>
-                                                    <constraint firstItem="031-xd-XPj" firstAttribute="top" secondItem="w3p-JS-4li" secondAttribute="bottom" constant="8" symbolic="YES" id="8mm-Z7-C9Q"/>
                                                     <constraint firstItem="fR7-Pv-7jn" firstAttribute="baseline" secondItem="ZhS-b0-AnP" secondAttribute="baseline" id="9dx-OW-jkH"/>
                                                     <constraint firstItem="w3p-JS-4li" firstAttribute="baseline" secondItem="2ZZ-ME-HXj" secondAttribute="baseline" id="BbZ-7B-aeW"/>
+                                                    <constraint firstAttribute="bottom" secondItem="031-xd-XPj" secondAttribute="bottom" constant="4" id="CXt-H7-45A"/>
+                                                    <constraint firstItem="031-xd-XPj" firstAttribute="top" secondItem="w3p-JS-4li" secondAttribute="bottom" constant="8" symbolic="YES" id="D7A-3U-i1Q"/>
                                                     <constraint firstItem="fR7-Pv-7jn" firstAttribute="centerX" secondItem="rLm-SG-aUR" secondAttribute="centerX" id="Fd3-0f-fLw"/>
                                                     <constraint firstItem="fR7-Pv-7jn" firstAttribute="leading" secondItem="rZx-xX-rhV" secondAttribute="trailing" constant="6" id="IIc-bq-06l"/>
-                                                    <constraint firstAttribute="bottom" secondItem="031-xd-XPj" secondAttribute="bottom" constant="4" id="MuE-3V-x1Z"/>
                                                     <constraint firstItem="JZU-fn-XWG" firstAttribute="baseline" secondItem="WFM-eN-dmD" secondAttribute="baseline" id="ONl-cL-pGg"/>
                                                     <constraint firstItem="JZU-fn-XWG" firstAttribute="leading" secondItem="WFM-eN-dmD" secondAttribute="trailing" constant="6" id="Pg1-A1-aqL"/>
-                                                    <constraint firstItem="031-xd-XPj" firstAttribute="leading" secondItem="w3p-JS-4li" secondAttribute="leading" id="bWX-OG-3nt"/>
-                                                    <constraint firstAttribute="trailing" secondItem="031-xd-XPj" secondAttribute="trailing" constant="83" id="lqa-6p-aoT"/>
                                                     <constraint firstItem="w3p-JS-4li" firstAttribute="centerX" secondItem="KvV-Ak-KWn" secondAttribute="centerX" id="mXm-vz-WOO"/>
                                                     <constraint firstAttribute="trailing" secondItem="JZU-fn-XWG" secondAttribute="trailing" constant="20" id="uwZ-I7-k79"/>
+                                                    <constraint firstItem="031-xd-XPj" firstAttribute="trailing" secondItem="JZU-fn-XWG" secondAttribute="trailing" id="wfH-mP-qSL"/>
                                                 </constraints>
                                             </view>
                                         </box>
@@ -1047,7 +1047,7 @@
                                             <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" id="Nuf-Kj-M4U">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">AutoRaise &amp; Launcher
-Version 4.8.1, 2024-03-19
+Version 4.9.0, 2024-03-21
 
  ©2024 Stefan Post, Lothar Haeger
 Icons made by https://www.flaticon.com/authors/fr</string>
