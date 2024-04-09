@@ -47,6 +47,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var hideIconButton: NSButton!
     @IBOutlet weak var shortcutView: MASShortcutView!
     @IBOutlet weak var ignoreAppsEdit: NSTextField!
+    @IBOutlet weak var ignoreTitlesEdit: NSTextField!
     @IBOutlet weak var stayFocusedBundleIdsEdit: NSTextFieldCell!
     @IBOutlet weak var disableKeyBox: NSComboBox!
     @IBOutlet weak var ignoreSpaceChangedButton: NSButton!
@@ -63,7 +64,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 5.1.0, 2024-03-29\n\n" +
+        "Version 5.2.0, 2024-04-09\n\n" +
         "©2024 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
 
@@ -91,6 +92,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var ignoreSpaceChanged = NSControl.StateValue.off
     var invertIgnoreApps = NSControl.StateValue.off
     var ignoreApps: String = ""
+    var ignoreTitles: String = ""
     var stayFocusedBundleIds: String = ""
     var disableKey: String = "control"
 
@@ -234,6 +236,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    @IBAction func ignoreTitles(_ sender: Any) {
+        ignoreTitles = ignoreTitlesEdit.stringValue
+        self.prefs.set(ignoreTitles, forKey: "ignoreTitles")
+        if autoRaiseService.isRunning {
+            self.stopService(self)
+            self.startService(self)
+        }
+    }
+
     @IBAction func stayFocusedBundleIds(_ sender: Any) {
         stayFocusedBundleIds = stayFocusedBundleIdsEdit.stringValue
         self.prefs.set(stayFocusedBundleIds, forKey: "stayFocusedBundleIds")
@@ -320,6 +331,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             invertIgnoreApps = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
         ignoreApps = prefs.string(forKey: "ignoreApps") ?? ""
+        ignoreTitles = prefs.string(forKey: "ignoreTitles") ?? ""
         stayFocusedBundleIds = prefs.string(forKey: "stayFocusedBundleIds") ?? ""
         disableKey = prefs.string(forKey: "disableKey") ?? "control"
 
@@ -348,6 +360,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         enableCurserScalingButton.state = enableCursorScaling
         enableAltTaskSwitcherButton.state = enableAltTaskSwitcher
         ignoreAppsEdit.stringValue = ignoreApps
+        ignoreTitlesEdit.stringValue = ignoreTitles
         stayFocusedBundleIdsEdit.stringValue = stayFocusedBundleIds
         disableKeyBox.stringValue = disableKey
         ignoreSpaceChangedButton.state = ignoreSpaceChanged
@@ -404,6 +417,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // update about tab contents
         aboutText.stringValue = appAbout
         ignoreAppsEdit.placeholderString = "App1,App2,... (confirm with enter)"
+        ignoreTitlesEdit.placeholderString = "Regex1,Regex2,... (confirm with enter)"
         // homepage link
         let pstyle = NSMutableParagraphStyle()
         pstyle.alignment = NSTextAlignment.center
@@ -493,6 +507,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 if ( !ignoreApps.isEmpty ) {
                     autoRaiseService.arguments! += ["-ignoreApps", ignoreApps]
+                }
+                if ( !ignoreTitles.isEmpty ) {
+                    autoRaiseService.arguments! += ["-ignoreTitles", ignoreTitles]
                 }
                 if ( !stayFocusedBundleIds.isEmpty ) {
                     autoRaiseService.arguments! += ["-stayFocusedBundleIds", stayFocusedBundleIds]
