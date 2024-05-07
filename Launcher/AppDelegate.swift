@@ -64,7 +64,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let buildNumber: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
     let appAbout =  "AutoRaise & Launcher\n" +
-        "Version 5.2.0, 2024-04-09\n\n" +
+        "Version 5.3.0, 2024-05-07\n\n" +
         "©2024 Stefan Post, Lothar Haeger\n" +
         "Icons made by https://www.flaticon.com/authors/fr"
 
