@@ -22,6 +22,8 @@ import CoreServices
 import Cocoa
 import Foundation
 import AppKit
+import OSLog
+import ServiceManagement
 
 class URLButton: NSButton {
     override func resetCursorRects() {
@@ -44,6 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var enableCurserScalingButton: NSButton!
     @IBOutlet weak var enableAltTaskSwitcherButton: NSButton!
     @IBOutlet weak var enableOnLaunchButton: NSButton!
+    @IBOutlet weak var launchAtLoginButton: NSButton!
     @IBOutlet weak var hideIconButton: NSButton!
     @IBOutlet weak var shortcutView: MASShortcutView!
     @IBOutlet weak var ignoreAppsEdit: NSTextField!
@@ -152,6 +155,72 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func enableOnLaunch(_ sender: NSButton) {
         enableOnLaunch = enableOnLaunchButton.state
         self.prefs.set(enableOnLaunch == NSControl.StateValue.on ? "1" : "0", forKey: "enableOnLaunch")
+    }
+
+    @IBAction func launchAtLogin(_ sender: NSButton) {
+        guard #available(macOS 13.0, *) else {
+            syncLaunchAtLoginButton()
+            return
+        }
+
+        do {
+            if sender.state == .on {
+                if SMAppService.mainApp.status == .requiresApproval {
+                    showLoginItemApproval()
+                } else if SMAppService.mainApp.status != .enabled {
+                    try SMAppService.mainApp.register()
+                    if SMAppService.mainApp.status == .requiresApproval {
+                        showLoginItemApproval()
+                    }
+                }
+            } else if SMAppService.mainApp.status != .notRegistered {
+                try SMAppService.mainApp.unregister()
+            }
+        } catch {
+            let alert = NSAlert()
+            alert.alertStyle = .critical
+            alert.messageText = "Could not update the login item"
+            alert.informativeText = error.localizedDescription
+            alert.runModal()
+        }
+
+        syncLaunchAtLoginButton()
+    }
+
+    func syncLaunchAtLoginButton() {
+        guard #available(macOS 13.0, *) else {
+            launchAtLoginButton.state = .off
+            launchAtLoginButton.isEnabled = false
+            launchAtLoginButton.toolTip = "Requires macOS 13 or later"
+            return
+        }
+
+        switch SMAppService.mainApp.status {
+        case .enabled:
+            launchAtLoginButton.state = .on
+            launchAtLoginButton.toolTip = nil
+        case .requiresApproval:
+            launchAtLoginButton.state = .off
+            launchAtLoginButton.toolTip = "Requires approval in System Settings > General > Login Items"
+        case .notRegistered, .notFound:
+            launchAtLoginButton.state = .off
+            launchAtLoginButton.toolTip = nil
+        @unknown default:
+            launchAtLoginButton.state = .off
+            launchAtLoginButton.toolTip = "Unknown login item status"
+        }
+    }
+
+    @available(macOS 13.0, *)
+    func showLoginItemApproval() {
+        let alert = NSAlert()
+        alert.messageText = "Approval required"
+        alert.informativeText = "Allow AutoRaise under System Settings > General > Login Items to open it automatically when you log in."
+        alert.addButton(withTitle: "Open Login Items")
+        alert.addButton(withTitle: "Not Now")
+        if alert.runModal() == .alertFirstButtonReturn {
+            SMAppService.openSystemSettingsLoginItems()
+        }
     }
 
     @IBAction func hideIcon(_ sender: NSButton) {
@@ -421,6 +490,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        if let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String {
+            window.title = "\(appName) Preferences"
+        }
+        let runtimePath = Bundle.main.bundleURL.path
+        let bundleIdentifier = Bundle.main.bundleIdentifier ?? "unknown"
+        let stableLaunchPathMatched = bundleIdentifier != "com.sbmpost.AutoRaise.dev" || runtimePath == "/Applications/AutoRaise Dev.app"
+        Logger(subsystem: bundleIdentifier, category: "runtime").notice(
+            "runtimeIdentity path=\(runtimePath, privacy: .public) bundleIdentifier=\(bundleIdentifier, privacy: .public) accessibilityTrusted=\(AXIsProcessTrusted(), privacy: .public) stableLaunchPathMatched=\(stableLaunchPathMatched, privacy: .public)"
+        )
         window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(CGWindowLevelKey.floatingWindow)))
 
         icon?.isTemplate = true
@@ -429,6 +507,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menuBarItem.isVisible = true
 
         readPreferences()
+        syncLaunchAtLoginButton()
 
         let shortcut = shortcutView.shortcutValue
         shortcutView.associatedUserDefaultsKey = "HotKey"
@@ -468,7 +547,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                           NSAttributedString.Key.paragraphStyle: pstyle])
 
         let instances = NSWorkspace.shared.runningApplications.filter {
-            $0.localizedName == "AutoRaise" && $0 != NSRunningApplication.current
+            $0.bundleIdentifier == Bundle.main.bundleIdentifier && $0 != NSRunningApplication.current
         }
 
         if (instances.count == 0) {
@@ -487,6 +566,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ aNotification: Notification) {
+        syncLaunchAtLoginButton()
         if (menuBarItem.isVisible == false && window.isVisible == false) {
             menuBarItem.isVisible = true
             hideIconButton.state = NSControl.StateValue.off

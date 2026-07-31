@@ -33,6 +33,7 @@
                 <outlet property="ignoreTitlesEdit" destination="dCY-fJ-gdk" id="BRI-Sv-fcs"/>
                 <outlet property="invertDisableKeyButton" destination="4zp-hA-XdC" id="wkB-Oy-dXm"/>
                 <outlet property="invertIgnoreAppsButton" destination="ZhS-b0-AnP" id="SgX-5m-eb3"/>
+                <outlet property="launchAtLoginButton" destination="vY4-Xr-LgN" id="qVz-VH-4FK"/>
                 <outlet property="mouseDeltaEdit" destination="tJl-mG-QVd" id="1JW-q1-QmQ"/>
                 <outlet property="pollMillisEdit" destination="cfJ-Qr-aBm" id="KvI-5v-m0Z"/>
                 <outlet property="requireMouseStopButton" destination="3jf-pK-VIB" id="HRk-C7-gdO"/>
@@ -803,16 +804,16 @@
                                                 </constraints>
                                             </view>
                                         </box>
-                                        <box title="When to enable/disable" translatesAutoresizingMaskIntoConstraints="NO" id="yy7-AM-oqU">
+                                        <box title="Startup and controls" translatesAutoresizingMaskIntoConstraints="NO" id="yy7-AM-oqU">
                                             <rect key="frame" x="25" y="197" width="450" height="200"/>
                                             <view key="contentView" id="rLm-SG-aUR">
                                                 <rect key="frame" x="0.0" y="0.0" width="450" height="188"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" id="uTn-Xu-dZ3">
-                                                        <rect key="frame" x="10" y="160" width="130" height="18"/>
+                                                        <rect key="frame" x="10" y="160" width="235" height="18"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                        <buttonCell key="cell" type="check" title="Enable on launch" bezelStyle="regularSquare" imagePosition="left" inset="2" id="OgB-hb-QVC">
+                                                        <buttonCell key="cell" type="check" title="Enable AutoRaise when app opens" bezelStyle="regularSquare" imagePosition="left" inset="2" id="OgB-hb-QVC">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -820,15 +821,15 @@
                                                             <action selector="enableOnLaunch:" target="Voe-Tx-rLC" id="3tP-zl-Lag"/>
                                                         </connections>
                                                     </button>
-                                                    <button verticalHuggingPriority="750" id="KvV-Ak-KWn">
-                                                        <rect key="frame" x="208" y="160" width="224" height="18"/>
+                                                    <button verticalHuggingPriority="750" id="vY4-Xr-LgN">
+                                                        <rect key="frame" x="245" y="160" width="187" height="18"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                        <buttonCell key="cell" type="check" title="Hide menubar icon (until restart)" bezelStyle="regularSquare" imagePosition="left" inset="2" id="nRJ-K1-IHp">
+                                                        <buttonCell key="cell" type="check" title="Open AutoRaise at login" bezelStyle="regularSquare" imagePosition="left" inset="2" id="cMB-uW-dB2">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
                                                         <connections>
-                                                            <action selector="hideIcon:" target="Voe-Tx-rLC" id="zyc-Bf-SwI"/>
+                                                            <action selector="launchAtLogin:" target="Voe-Tx-rLC" id="bYw-DY-z85"/>
                                                         </connections>
                                                     </button>
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="rZx-xX-rhV">
@@ -951,7 +952,7 @@
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="031-xd-XPj" firstAttribute="top" secondItem="4zp-hA-XdC" secondAttribute="bottom" constant="6" id="3bd-Zo-GDR"/>
-                                                    <constraint firstItem="ZhS-b0-AnP" firstAttribute="trailing" secondItem="KvV-Ak-KWn" secondAttribute="trailing" id="79b-eD-lot"/>
+                                                    <constraint firstAttribute="trailing" secondItem="ZhS-b0-AnP" secondAttribute="trailing" constant="18" id="79b-eD-lot"/>
                                                     <constraint firstItem="4zp-hA-XdC" firstAttribute="firstBaseline" secondItem="2ZZ-ME-HXj" secondAttribute="baseline" id="Av9-nx-2V3"/>
                                                     <constraint firstAttribute="trailing" secondItem="dCY-fJ-gdk" secondAttribute="trailing" constant="20" symbolic="YES" id="BAP-ci-EdR"/>
                                                     <constraint firstItem="JZU-fn-XWG" firstAttribute="trailing" secondItem="031-xd-XPj" secondAttribute="trailing" id="BrE-ul-eIf"/>
@@ -1043,6 +1044,17 @@
                                                         </buttonCell>
                                                         <connections>
                                                             <action selector="ignoreSpaceChanged:" target="Voe-Tx-rLC" id="kfZ-qt-ybI"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button verticalHuggingPriority="750" id="KvV-Ak-KWn">
+                                                        <rect key="frame" x="260" y="107" width="172" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <buttonCell key="cell" type="check" title="Hide menubar icon" bezelStyle="regularSquare" imagePosition="left" inset="2" id="nRJ-K1-IHp">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="hideIcon:" target="Voe-Tx-rLC" id="zyc-Bf-SwI"/>
                                                         </connections>
                                                     </button>
                                                     <button verticalHuggingPriority="750" id="3jf-pK-VIB">
