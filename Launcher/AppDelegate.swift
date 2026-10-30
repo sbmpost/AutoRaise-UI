@@ -57,6 +57,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var requireMouseStopButton: NSButton!
     @IBOutlet weak var requireMultipleScreensButton: NSButton!
     @IBOutlet weak var requireScreenChangeButton: NSButton!
+    @IBOutlet weak var activateTopWindowOnScreenChangeButton: NSButton!
     @IBOutlet weak var ignoreSpaceChangedButton: NSButton!
     @IBOutlet weak var invertIgnoreAppsButton: NSButton!
     @IBOutlet weak var mouseDeltaEdit: NSTextField!
@@ -101,6 +102,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var requireMouseStop = NSControl.StateValue.on
     var requireMultipleScreens = NSControl.StateValue.off
     var requireScreenChange = NSControl.StateValue.off
+    var activateTopWindowOnScreenChange = NSControl.StateValue.off
     var ignoreSpaceChanged = NSControl.StateValue.off
     var invertDisableKey = NSControl.StateValue.off
     var invertIgnoreApps = NSControl.StateValue.off
@@ -407,6 +409,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    @IBAction func activateTopWindowOnScreenChange(_ sender: Any) {
+        activateTopWindowOnScreenChange = activateTopWindowOnScreenChangeButton.state
+        self.prefs.set(activateTopWindowOnScreenChange == NSControl.StateValue.on ? "1" : "0",
+            forKey: "activateTopWindowOnScreenChange")
+        if autoRaiseService.isRunning {
+            self.stopService(self)
+            self.startService(self)
+        }
+    }
+
     @IBAction func ignoreSpaceChanged(_ sender: Any) {
         ignoreSpaceChanged = ignoreSpaceChangedButton.state
         self.prefs.set(ignoreSpaceChanged == NSControl.StateValue.on ? "1" : "0",
@@ -490,6 +502,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let rawValue = prefs.string(forKey: "requireScreenChange") {
             requireScreenChange = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
+        if let rawValue = prefs.string(forKey: "activateTopWindowOnScreenChange") {
+            activateTopWindowOnScreenChange = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
+        }
         if let rawValue = prefs.string(forKey: "ignoreSpaceChanged") {
             ignoreSpaceChanged = NSControl.StateValue(rawValue: Int(rawValue) ?? 0)
         }
@@ -536,6 +551,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         requireMouseStopButton.state = requireMouseStop
         requireMultipleScreensButton.state = requireMultipleScreens
         requireScreenChangeButton.state = requireScreenChange
+        activateTopWindowOnScreenChangeButton.state = activateTopWindowOnScreenChange
         ignoreSpaceChangedButton.state = ignoreSpaceChanged
         invertDisableKeyButton.state = invertDisableKey
         invertIgnoreAppsButton.state = invertIgnoreApps
@@ -707,6 +723,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 if ( requireScreenChange == NSControl.StateValue.on ) {
                     autoRaiseService.arguments! += ["-requireScreenChange", "true"]
+                }
+                if ( activateTopWindowOnScreenChange == NSControl.StateValue.on ) {
+                    autoRaiseService.arguments! += ["-activateTopWindowOnScreenChange", "true"]
                 }
                 if ( ignoreSpaceChanged == NSControl.StateValue.on ) {
                     autoRaiseService.arguments! += ["-ignoreSpaceChanged", "true"]
